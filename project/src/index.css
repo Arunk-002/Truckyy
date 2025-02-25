@@ -1,0 +1,54 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --color-primary: #F38181;
+  --color-secondary: #FCE38A;
+  --color-accent: #EAFFD0;
+  --color-dark: #95E1D3;
+}
+
+body {
+  background-color: #f8f8f8;
+}
+
+.auth-input {
+  @apply w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent;
+}
+
+.auth-button {
+  @apply w-full px-4 py-2 text-white rounded-lg transition-colors duration-200;
+}
+
+/* Hide scrollbar but keep functionality */
+.hide-scrollbar {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+}
+
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;  /* Chrome, Safari and Opera */
+}
+
+/* Floating label styles */
+.float-label {
+  @apply relative;
+}
+
+.float-label input {
+  @apply py-3 pl-12;
+}
+
+.float-label label {
+  @apply absolute left-10 top-1/2 -translate-y-1/2 transition-all duration-200 text-gray-500 pointer-events-none;
+}
+
+.float-label input:focus ~ label,
+.float-label input:not(:placeholder-shown) ~ label {
+  @apply text-xs text-primary transform -translate-y-full top-4;
+}
+
+.float-label input:focus::placeholder {
+  @apply text-transparent;
+}
