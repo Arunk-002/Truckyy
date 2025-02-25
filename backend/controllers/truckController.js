@@ -1,4 +1,5 @@
 const truckService = require('../services/truckService')
+const userService = require('../services/userService')
 const registerTruck = async (req, res) => {
     try {
       const { userId, truckName, gstNumber } = req.body;
@@ -11,7 +12,7 @@ const registerTruck = async (req, res) => {
         name: truckName,
         gstInfo: gstNumber,
       });
-  
+      await userService.updateUserField(userId,'role','owner')
       res.status(201).json({ message: 'Truck registered successfully', truck });
     } catch (error) {
       console.log(error);

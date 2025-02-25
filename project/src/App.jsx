@@ -12,7 +12,6 @@ import TruckDashboard from "./pages/TruckDashboard";
 import TruckSignUp from "./pages/TruckSignUp";
 
 function App() {
-
   return (
     <>
       <Toaster />
@@ -21,16 +20,8 @@ function App() {
           <Route path="/" element={<Home />} />
           <Route path="/signin" element={<SignIn />} />
           <Route path="/signup" element={<SignUp />} />
-          <Route path="/truck/:id" element={<TruckDetail />} />
-          <Route path="/truck/dashboard" element={<TruckDashboard />} />
-          <Route
-            path="/truck/signup"
-            element={
-              <ProtectedRoute>
-                <TruckSignUp />
-              </ProtectedRoute>
-            }
-          />
+
+          {/* Profile route under protection */}
           <Route
             path="/profile"
             element={
@@ -39,6 +30,27 @@ function App() {
               </ProtectedRoute>
             }
           />
+
+          {/* Grouped Truck Routes */}
+          <Route path="/truck">
+            <Route path=":id" element={<TruckDetail />} />
+            <Route
+              path="dashboard"
+              element={
+                <ProtectedRoute>
+                  <TruckDashboard />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="signup"
+              element={
+                <ProtectedRoute>
+                  <TruckSignUp />
+                </ProtectedRoute>
+              }
+            />
+          </Route>
         </Routes>
       </AuthProvider>
     </>

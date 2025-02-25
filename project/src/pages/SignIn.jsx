@@ -16,7 +16,11 @@ function SignIn() {
       if (response.name) {
         console.log(response);
         notifyLogin(response.name);
-        navigate("/");
+        if(!response.role==='customer'){
+          navigate("/");
+        }else{
+          navigate('/truck/dashboard')
+        }
       }else{
         notifyError(response.message)
       }

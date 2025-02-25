@@ -54,4 +54,10 @@ const updateUser = async (id,data) => {
     { new: true, runValidators: true }
   );
 }
-module.exports = { createUser, findUser, findUserById,findOtp,deleteOtp,updateUser };
+
+const updateUserField = async (id, field, data) => {
+  const user = await User.findByIdAndUpdate(id, { [field]: data }, { new: true });
+  return user;
+};
+
+module.exports = { createUser, findUser, findUserById,findOtp,deleteOtp,updateUser,updateUserField };

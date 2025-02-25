@@ -3,7 +3,6 @@ import { Link, useNavigate } from "react-router-dom";
 import { MapPin, Mail, Lock, User, Truck, FileText } from "lucide-react";
 
 import { useAuth } from "../context/AuthContext";
-import sendEmail from "../utils/SendEmail";
 import { notifyError, notifySignup } from "../toasts/toast";
 import axiosInstance from "../axios/axios";
 import CustomLoader from "../components/CustomLoader";
@@ -18,7 +17,6 @@ function TruckSignUp() {
     gstNumber: "",
   });
   const navigate = useNavigate();
-
   const validateGSTNumber = (gst) => {
     const gstRegex =
       /^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1}$/;
@@ -58,6 +56,9 @@ const truckCreation = async () => {
     notifyError(error.response.data.message || error.message);
   }
 }
+useEffect(()=>{
+  if (user.role==='owner') navigate('/truck/dashboard') 
+})
   return (
     <>
     {loading && <CustomLoader />}
