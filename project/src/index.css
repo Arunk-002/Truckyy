@@ -37,7 +37,7 @@ body {
 }
 
 .float-label input {
-  @apply py-3 pl-12;
+  @apply py-3 pl-14;
 }
 
 .float-label label {
