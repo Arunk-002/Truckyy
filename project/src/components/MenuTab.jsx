@@ -2,28 +2,29 @@ import React, { useEffect, useState } from "react";
 import { Edit2, Trash2, X, Plus } from "lucide-react";
 import axiosInstance from "../axios/axios"; // Import axiosInstance
 import { confirmModal, notifyError, notifyMessage } from "../toasts/toast";
-function MenuTab({ truckId }) {
+import{useTruck}from '../context/TruckContext'
+function MenuTab() {
   const [menuItems, setMenuItems] = useState([]);
   const [menuId, setMenuId] = useState("");
   const [showAddItem, setShowAddItem] = useState(false);
-
+  const {truck} = useTruck()
   const [newItem, setNewItem] = useState({
-    truckId: truckId,
+    truckId: "",
     name: "",
     category: "",
     price: "",
     description: "",
   });
   useEffect(() => {
-    if (truckId) {
+    if (truck) {
       setNewItem((prevState) => ({
         ...prevState,
-        truckId: truckId, // Ensure truckId is set properly
+        truckId: truck._id, // Ensure truckId is set properly
       }));
     }
     const fetchMenuItems = async () => {
       try {
-        const response = await axiosInstance.get(`/trucks/${truckId}/menu`);
+        const response = await axiosInstance.get(`/trucks/${truck._id}/menu`);
         console.log(response.data);
 
         setMenuItems(response.data.truck.items || []);
@@ -34,10 +35,10 @@ function MenuTab({ truckId }) {
       }
     };
 
-    if (truckId) {
+    if (truck?._id) {
       fetchMenuItems();
     }
-  }, [truckId]);
+  }, [truck]);
 
   const [loading, setLoading] = useState(false);
 
@@ -74,7 +75,12 @@ function MenuTab({ truckId }) {
   // Add menu item handler
   const handleAddMenuItem = async (e) => {
     e.preventDefault();
-    if (menuItems.length>=3 ) return
+    console.log("fghjk",truck?.subscription.plan);
+    
+    if (menuItems.length>=3 && (truck?.subscription.plan==='free')) {
+      notifyMessage('You have reached Your Limit! subscribe to unlock more')
+      return
+    }
     if (
       !newItem.truckId ||
       !newItem.name ||
@@ -93,7 +99,7 @@ function MenuTab({ truckId }) {
         console.log(response.data.menu.items);
         setMenuItems(response.data.menu.items);
         setNewItem({
-          truckId,
+          truckId:truck?._id,
           name: "",
           category: "",
           price: "",
@@ -141,9 +147,6 @@ function MenuTab({ truckId }) {
                 </p>
               </div>
               <div className="flex space-x-2">
-                <button className="p-2 text-blue-600 hover:bg-blue-50 rounded-full">
-                  <Edit2 className="w-4 h-4" />
-                </button>
                 <button
                   onClick={() => handleDeleteItem(item._id)}
                   className="p-2 text-red-600 hover:bg-red-50 rounded-full"

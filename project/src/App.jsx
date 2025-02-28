@@ -8,6 +8,7 @@ import Profile from "./pages/Profile";
 import { Toaster } from "react-hot-toast";
 import ProtectedRoute from "./components/ProtectedRoute";
 import { AuthProvider } from "./context/AuthContext";
+import { TruckProvider } from "./context/TruckContext";
 import TruckDashboard from "./pages/TruckDashboard";
 import TruckSignUp from "./pages/TruckSignUp";
 
@@ -16,42 +17,44 @@ function App() {
     <>
       <Toaster />
       <AuthProvider>
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/signin" element={<SignIn />} />
-          <Route path="/signup" element={<SignUp />} />
+        <TruckProvider>
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/signin" element={<SignIn />} />
+            <Route path="/signup" element={<SignUp />} />
 
-          {/* Profile route under protection */}
-          <Route
-            path="/profile"
-            element={
-              <ProtectedRoute>
-                <Profile />
-              </ProtectedRoute>
-            }
-          />
-
-          {/* Grouped Truck Routes */}
-          <Route path="/truck">
-            <Route path=":id" element={<TruckDetail />} />
+            {/* Profile route under protection */}
             <Route
-              path="dashboard"
+              path="/profile"
               element={
                 <ProtectedRoute>
-                  <TruckDashboard />
+                  <Profile />
                 </ProtectedRoute>
               }
             />
-            <Route
-              path="signup"
-              element={
-                <ProtectedRoute>
-                  <TruckSignUp />
-                </ProtectedRoute>
-              }
-            />
-          </Route>
-        </Routes>
+
+            {/* Grouped Truck Routes */}
+            <Route path="/truck">
+              <Route path=":id" element={<TruckDetail />} />
+              <Route
+                path="dashboard"
+                element={
+                  <ProtectedRoute>
+                    <TruckDashboard />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="signup"
+                element={
+                  <ProtectedRoute>
+                    <TruckSignUp />
+                  </ProtectedRoute>
+                }
+              />
+            </Route>
+          </Routes>
+        </TruckProvider>
       </AuthProvider>
     </>
   );

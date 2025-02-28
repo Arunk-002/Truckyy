@@ -7,27 +7,21 @@ import HoursTab from "../components/HoursTab";
 import LocationTab from "../components/LocationTab";
 import SubscriptionTab from "../components/SubscriptionTab";
 import { useAuth } from "../context/AuthContext";
-import axiosInstance from "../axios/axios";
+import{useTruck}from '../context/TruckContext'
 
 function TruckDashboard() {
-  const [truckId, setTruckid] = useState();
+  const [truckId, setTruckId] = useState();
   const [isOpen, setIsOpen] = useState(true);
   const [activeTab, setActiveTab] = useState("menu");
   const [isEditingDescription, setIsEditingDescription] = useState(false);
+  const {truck} = useTruck()
   const { user } = useAuth();
-  const getTruckDetails = async () => {
-    try {
-      const response = await axiosInstance.get(`/trucks/${user._id}`);
-      if (response.status === 200) {
-        setTruckid(response.data.truck._id); 
-      }
-    } catch (error) {
-      console.log(error);
-    }
-  };
+
   useEffect(() => {
-    getTruckDetails();
-  });
+    if (truck) {
+      setTruckId(truck._id);
+    }
+  }, [truck]);
   // State for truck information
   const [truckInfo, setTruckInfo] = useState({
     name: user.name,
@@ -150,7 +144,7 @@ function TruckDashboard() {
               />
             )}
 
-            {activeTab === "menu" && <MenuTab truckId={truckId} />}
+            {activeTab === "menu" && <MenuTab/>}
 
             {activeTab === "hours" && (
               <HoursTab
