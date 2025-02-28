@@ -20,4 +20,12 @@ const createTruck = async ({ userId, name, gstInfo }) => {
     }
   };
   
-  module.exports = { createTruck };
+  const findtruck = async (userId) => {
+    try {
+      const truck = await FoodTruck.findOne({userId})
+      return truck
+    } catch (error) {
+      throw new Error(error.message)
+    }
+  }
+  module.exports = { createTruck ,findtruck};

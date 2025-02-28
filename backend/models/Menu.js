@@ -22,16 +22,13 @@ const menuItemSchema = new Schema({
         required: true,
         min: 0
       },
-      description: String,
-      isAvailable: {
-        type: Boolean,
-        default: true
-      },
-      isPopular: {
-        type: Boolean,
-        default: false
+      description: {
+        type:String
       }
     }]
   }, {
     timestamps: true
   });
+
+  const Menu = mongoose.model('Menu',menuItemSchema)
+  module.exports = Menu

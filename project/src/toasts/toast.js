@@ -1,7 +1,23 @@
 import toast from "react-hot-toast";
+import Swal from 'sweetalert2';
 
 const notifySignup = (username) => {
   toast.success(`🍔 Welcome, ${username}! Your account is ready.`, {
+    icon: "🎉",
+    style: {
+      border: "2px solid #F38181", // Primary color
+      padding: "14px",
+      color: "#fff",
+      background: "#95E1D3", // Dark theme color
+      fontWeight: "bold",
+      borderRadius: "10px",
+    },
+    duration: 4000,
+    position: "top-center",
+  });
+};
+const notifyMessage = (message) => {
+  toast.success(`🍔 ${message}!`, {
     icon: "🎉",
     style: {
       border: "2px solid #F38181", // Primary color
@@ -47,4 +63,28 @@ const notifyError = (message) => {
   });
 };
 
-export { notifySignup, notifyLogin, notifyError };
+
+
+
+// ----------------------------SweetAlert--------------------------------
+
+const confirmModal = async () => {
+  const result = await Swal.fire({
+    title: "Are you sure?",
+    text: "You won't be able to undo this action!",
+    icon: "warning",
+    showCancelButton: true,
+    confirmButtonColor: "#3085d6",
+    cancelButtonColor: "#d33",
+    confirmButtonText: "Yes, proceed!",
+    cancelButtonText: "Cancel",
+  });
+  if (result.isConfirmed) {
+    return true
+  } else {
+    return false
+  }
+};
+
+
+export { notifySignup, notifyLogin, notifyError, notifyMessage,confirmModal };
