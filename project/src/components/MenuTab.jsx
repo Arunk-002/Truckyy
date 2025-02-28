@@ -74,9 +74,7 @@ function MenuTab() {
 
   // Add menu item handler
   const handleAddMenuItem = async (e) => {
-    e.preventDefault();
-    console.log("fghjk",truck?.subscription.plan);
-    
+    e.preventDefault();    
     if (menuItems.length>=3 && (truck?.subscription.plan==='free')) {
       notifyMessage('You have reached Your Limit! subscribe to unlock more')
       return

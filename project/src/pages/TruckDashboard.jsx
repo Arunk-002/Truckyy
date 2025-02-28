@@ -7,14 +7,13 @@ import HoursTab from "../components/HoursTab";
 import LocationTab from "../components/LocationTab";
 import SubscriptionTab from "../components/SubscriptionTab";
 import { useAuth } from "../context/AuthContext";
-import{useTruck}from '../context/TruckContext'
+import { useTruck } from "../context/TruckContext";
 
 function TruckDashboard() {
   const [truckId, setTruckId] = useState();
   const [isOpen, setIsOpen] = useState(true);
   const [activeTab, setActiveTab] = useState("menu");
-  const [isEditingDescription, setIsEditingDescription] = useState(false);
-  const {truck} = useTruck()
+  const { truck } = useTruck();
   const { user } = useAuth();
 
   useEffect(() => {
@@ -23,18 +22,6 @@ function TruckDashboard() {
     }
   }, [truck]);
   // State for truck information
-  const [truckInfo, setTruckInfo] = useState({
-    name: user.name,
-    description:
-      "Taco King is a family-owned food truck serving authentic Mexican street food. Our recipes have been passed down for generations, bringing the true flavors of Mexico to your neighborhood.",
-    shortDescription: "Authentic Mexican street food with a modern twist",
-    cuisine: "Mexican",
-    specialties: ["Tacos", "Burritos", "Quesadillas"],
-    story: "Founded in 2020, Taco King started as a passion project...",
-    coverImage:
-      "https://images.unsplash.com/photo-1565123409695-7b5ef63a2efb?auto=format&fit=crop&w=1200&h=400",
-  });
-
   const [operatingHours, setOperatingHours] = useState({
     Monday: { open: "11:00", close: "20:00", isOpen: true },
     Tuesday: { open: "11:00", close: "20:00", isOpen: true },
@@ -55,19 +42,6 @@ function TruckDashboard() {
     todayOrders: 24,
     totalRevenue: 1250.5,
   });
-
-  // Handlers
-  const handleUpdateTruckInfo = (field, value) => {
-    setTruckInfo((prev) => ({
-      ...prev,
-      [field]: value,
-    }));
-  };
-
-  const handleSaveDescription = () => {
-    setIsEditingDescription(false);
-    // Here you would typically save to backend
-  };
 
   const handleUpdateHours = (day, field, value) => {
     setOperatingHours((prev) => ({
@@ -134,17 +108,9 @@ function TruckDashboard() {
           </div>
 
           <div className="p-6">
-            {activeTab === "about" && (
-              <AboutTab
-                truckInfo={truckInfo}
-                isEditingDescription={isEditingDescription}
-                setIsEditingDescription={setIsEditingDescription}
-                handleUpdateTruckInfo={handleUpdateTruckInfo}
-                handleSaveDescription={handleSaveDescription}
-              />
-            )}
+            {activeTab === "about" && <AboutTab />}
 
-            {activeTab === "menu" && <MenuTab/>}
+            {activeTab === "menu" && <MenuTab />}
 
             {activeTab === "hours" && (
               <HoursTab

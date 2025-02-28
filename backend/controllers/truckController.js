@@ -88,4 +88,25 @@ const deleteMenuItem = async (req,res) => {
   }
 }
   
-module.exports = { registerTruck,addItem ,getTruck,getMenuItems,deleteMenuItem};
+const updateTruckController = async (req, res) => {
+  try {
+    const truckId  = req.params.id // Get truck ID from the URL
+    const updates = req.body; // Data from frontend
+    if(req.file.location) updates.image = req.file.location
+    if (!truckId) {
+      return res.status(400).json({ message: "Truck ID is required" });
+    }
+
+    const updatedTruck = await truckService.updateFoodTruck(truckId, updates);
+
+    res.status(200).json({
+      message: "Food truck updated successfully",
+      data: updatedTruck,
+    });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+
+module.exports = { registerTruck,addItem ,getTruck,getMenuItems,deleteMenuItem,updateTruckController};

@@ -28,4 +28,28 @@ const createTruck = async ({ userId, name, gstInfo }) => {
       throw new Error(error.message)
     }
   }
-  module.exports = { createTruck ,findtruck};
+
+
+  const updateFoodTruck = async (truckId, updates) => {
+    try {
+      const foodTruck = await FoodTruck.findById(truckId);
+      if (!foodTruck) {
+        throw new Error("Food truck not found");
+      }
+  
+      // Only update fields present in the request
+      Object.keys(updates).forEach((key) => {
+        if (updates[key] !== undefined) {
+          foodTruck[key] = updates[key];
+        }
+      });
+  
+      const updatedTruck = await foodTruck.save();
+      return updatedTruck;
+    } catch (error) {
+      throw new Error(error.message);
+    }
+  };
+  
+
+  module.exports = { updateFoodTruck,createTruck ,findtruck};
