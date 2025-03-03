@@ -111,12 +111,7 @@ function TruckDashboard() {
 
             {activeTab === "menu" && <MenuTab />}
 
-            {activeTab === "hours" && (
-              <HoursTab
-                operatingHours={operatingHours}
-                handleUpdateHours={handleUpdateHours}
-              />
-            )}
+            {activeTab === "hours" && <HoursTab />}
 
             {activeTab === "location" && (
               <LocationTab

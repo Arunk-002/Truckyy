@@ -51,5 +51,22 @@ const createTruck = async ({ userId, name, gstInfo }) => {
     }
   };
   
+  const updateOperatingHours = async (truckId, operatingHours) => {
+    try {
+      const updatedTruck = await FoodTruck.findByIdAndUpdate(
+        truckId,
+        { operatingHours },
+        { new: true, runValidators: true }
+      );
+  
+      if (!updatedTruck) {
+        throw new Error("Food truck not found");
+      }
+  
+      return updatedTruck;
+    } catch (error) {
+      throw new Error(error.message);
+    }
+  };
 
-  module.exports = { updateFoodTruck,createTruck ,findtruck};
+  module.exports = { updateFoodTruck,createTruck ,findtruck,updateOperatingHours};
