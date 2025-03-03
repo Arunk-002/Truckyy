@@ -39,8 +39,7 @@ function TruckDashboard() {
 
   const [stats] = useState({
     favorites: 156,
-    todayOrders: 24,
-    totalRevenue: 1250.5,
+    reviews: 24,
   });
 
   const handleUpdateHours = (day, field, value) => {
