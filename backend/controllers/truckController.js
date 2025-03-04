@@ -158,6 +158,19 @@ const updateTruckLocation = async (req, res) => {
   }
 };
 
+const updateTruckSubscription = async (req, res) => {
+  const truckId = req.params.id;
+  try {
+    const updatedTruck = await truckService.updateSubscription(truckId, 'premium');
+    if (!updatedTruck) {
+      return res.status(404).json({ message: "Food truck not found." });
+    }
+    res.status(200).json({ message: "Subscription updated successfully", data: updatedTruck });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
 module.exports = {
   registerTruck,
   addItem,
@@ -166,5 +179,6 @@ module.exports = {
   deleteMenuItem,
   updateTruckController,
   updateTruckOperatingHours,
-  updateTruckLocation
+  updateTruckLocation,
+  updateTruckSubscription
 };

@@ -48,7 +48,6 @@ const foodTruckSchema = new Schema(
         enum: ["free", "premium"],
         default: "free",
       },
-      expiryDate: Date,
       features: [
         {
           type: String,
