@@ -9,7 +9,7 @@ function SubscriptionTab() {
         {/* Basic Plan */}
         <div className="bg-gray-50 rounded-lg p-6 border-2 border-gray-200">
           <h3 className="text-xl font-semibold mb-2">Basic</h3>
-          <p className="text-3xl font-bold mb-4">$29<span className="text-sm text-gray-500">/mo</span></p>
+          <p className="text-3xl font-bold mb-4">Free</p>
           <ul className="space-y-3 mb-6">
             <li className="flex items-center text-sm text-gray-600">
               <Crown className="w-4 h-4 mr-2 text-primary" />
@@ -17,14 +17,14 @@ function SubscriptionTab() {
             </li>
             <li className="flex items-center text-sm text-gray-600">
               <Crown className="w-4 h-4 mr-2 text-primary" />
-              Up to 50 Menu Items
+              Up to 3 Menu Items
             </li>
             <li className="flex items-center text-sm text-gray-600">
               <Crown className="w-4 h-4 mr-2 text-primary" />
-              Email Support
+              Max 3 Cuisine Types
             </li>
           </ul>
-          <button className="w-full px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90">
+          <button disabled className="w-full px-4 py-2 cursor-not-allowed bg-primary text-white rounded-l">
             Current Plan
           </button>
         </div>
@@ -35,7 +35,7 @@ function SubscriptionTab() {
             Popular
           </div>
           <h3 className="text-xl font-semibold mb-2">Pro</h3>
-          <p className="text-3xl font-bold mb-4">$49<span className="text-sm text-gray-500">/mo</span></p>
+          <p className="text-3xl font-bold mb-4">$99</p>
           <ul className="space-y-3 mb-6">
             <li className="flex items-center text-sm text-gray-600">
               <Crown className="w-4 h-4 mr-2 text-primary" />
@@ -47,30 +47,7 @@ function SubscriptionTab() {
             </li>
             <li className="flex items-center text-sm text-gray-600">
               <Crown className="w-4 h-4 mr-2 text-primary" />
-              Priority Support
-            </li>
-          </ul>
-          <button className="w-full px-4 py-2 bg-white text-primary border-2 border-primary rounded-lg hover:bg-primary/10">
-            Upgrade
-          </button>
-        </div>
-
-        {/* Premium Plan */}
-        <div className="bg-gray-50 rounded-lg p-6 border-2 border-gray-200">
-          <h3 className="text-xl font-semibold mb-2">Premium</h3>
-          <p className="text-3xl font-bold mb-4">$99<span className="text-sm text-gray-500">/mo</span></p>
-          <ul className="space-y-3 mb-6">
-            <li className="flex items-center text-sm text-gray-600">
-              <Crown className="w-4 h-4 mr-2 text-primary" />
-              Custom Analytics
-            </li>
-            <li className="flex items-center text-sm text-gray-600">
-              <Crown className="w-4 h-4 mr-2 text-primary" />
-              White-label Service
-            </li>
-            <li className="flex items-center text-sm text-gray-600">
-              <Crown className="w-4 h-4 mr-2 text-primary" />
-              24/7 Support
+              Unlimited Cuisine Types
             </li>
           </ul>
           <button className="w-full px-4 py-2 bg-white text-primary border-2 border-primary rounded-lg hover:bg-primary/10">

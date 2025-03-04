@@ -15,10 +15,15 @@ function TruckDashboard() {
   const [activeTab, setActiveTab] = useState("menu");
   const { truck } = useTruck();
   const { user } = useAuth();
-
+  const [navlinks,setNavlinks]=useState([])
   useEffect(() => {
     if (truck) {
       setTruckId(truck._id);
+    }
+    if (truck?.subscription.plan ==='premium') {
+      setNavlinks(["menu", "about", "hours", "location"])
+    }else{
+      setNavlinks(["menu", "about", "hours", "location", "subscription"])
     }
   }, [truck]);
   // State for truck information
@@ -88,11 +93,11 @@ function TruckDashboard() {
               className="flex space-x-8 px-6 overflow-x-auto"
               aria-label="Tabs"
             >
-              {["menu", "about", "hours", "location", "subscription"].map(
+              {navlinks.map(
                 (tab) => (
                   <button
                     key={tab}
-                    onClick={() => setActiveTab(tab)}
+                    onClick={() =>setActiveTab(tab)}
                     className={`py-4 px-1 border-b-2 font-medium text-sm whitespace-nowrap ${
                       activeTab === tab
                         ? "border-primary text-primary"
@@ -120,7 +125,7 @@ function TruckDashboard() {
               />
             )}
 
-            {activeTab === "subscription" && <SubscriptionTab />}
+            {activeTab === "subscription"  && <SubscriptionTab />}
           </div>
         </div>
       </main>
