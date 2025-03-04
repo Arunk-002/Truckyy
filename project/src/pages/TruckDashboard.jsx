@@ -93,7 +93,7 @@ function TruckDashboard() {
 
             {activeTab === "location" && <LocationTab />}
 
-            {activeTab === "subscription" && <SubscriptionTab />}
+            {activeTab === "subscription" && <SubscriptionTab close={setActiveTab} />}
           </div>
         </div>
       </main>

@@ -26,7 +26,7 @@ export const TruckProvider = ({ children }) => {
   }, [user]); // Depend on `user` so it refetches when user changes
 
   return (
-    <TruckContext.Provider value={{ truck }}>
+    <TruckContext.Provider value={{ truck,setTruck }}>
       {children}
     </TruckContext.Provider>
   );

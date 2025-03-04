@@ -1,7 +1,52 @@
-import React from 'react';
-import { Crown } from 'lucide-react';
+import React, { useEffect, useState } from "react";
+import { Crown } from "lucide-react";
+import RazorpayGateWay from "../utils/RazorPay";
+import { useAuth } from "../context/AuthContext";
+import axiosInstance from "../axios/axios";
+import { notifyError, notifyMessage } from "../toasts/toast";
+import { useTruck } from "../context/TruckContext";
+function SubscriptionTab({close}) {
+  const [loading,setLoading] = useState(false)
+  const { user } = useAuth();
+  const { truck ,setTruck} = useTruck();
+  useEffect(() => {}, [user,truck]);
+  const handleSubscription = async () => {
+    setLoading(true)
+    try {
+      const response = await axiosInstance.post("/payments/create-order", {
+        amount: 99,
+        currency: "INR",
+      });
+      if (response.status === 200) {
+        const order = response.data.order;
+        setLoading(false)
+        await RazorpayGateWay(user, order);
+        console.log(order);
+        await updateSubscription()
+      }
+    } catch (error) {
+      setLoading(false)
+      notifyError(error.message);
+      console.log(error.message);
+    }
+  };
 
-function SubscriptionTab() {
+  const updateSubscription = async () => {
+    setLoading(true)
+    try {
+      const response = await axiosInstance.get(`trucks/${truck._id}/update-subscription`);
+      if (response.status ===200) {
+        notifyMessage(response.data.message)
+        setTruck(response.data.data)
+        close('about')
+        setLoading(false)
+      }
+    } catch (error) {
+      notifyError(error.message)
+      console.log(error);
+      setLoading(false)
+    }
+  };
   return (
     <div>
       <h2 className="text-lg font-semibold mb-6">Subscription Plans</h2>
@@ -24,7 +69,10 @@ function SubscriptionTab() {
               Max 3 Cuisine Types
             </li>
           </ul>
-          <button disabled className="w-full px-4 py-2 cursor-not-allowed bg-primary text-white rounded-l">
+          <button
+            disabled
+            className="w-full px-4 py-2 cursor-not-allowed bg-primary text-white rounded-l"
+          >
             Current Plan
           </button>
         </div>
@@ -50,7 +98,10 @@ function SubscriptionTab() {
               Unlimited Cuisine Types
             </li>
           </ul>
-          <button className="w-full px-4 py-2 bg-white text-primary border-2 border-primary rounded-lg hover:bg-primary/10">
+          <button
+            onClick={handleSubscription}
+            className="w-full px-4 py-2 bg-white text-primary border-2 border-primary rounded-lg hover:bg-primary/10"
+          >
             Upgrade
           </button>
         </div>
