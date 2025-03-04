@@ -69,4 +69,21 @@ const createTruck = async ({ userId, name, gstInfo }) => {
     }
   };
 
-  module.exports = { updateFoodTruck,createTruck ,findtruck,updateOperatingHours};
+  const updateLocation = async (truckId, lat, lng) => {
+    try {
+      const foodTruck = await FoodTruck.findByIdAndUpdate(
+        truckId,
+        {
+          $set: {
+            "location.coordinates": [lng, lat],
+            "location.updatedAt": new Date(),
+          },
+        },
+        { new: true }
+      );
+      return foodTruck;
+    } catch (error) {
+      throw new Error("Error updating location: " + error.message);
+    }
+  };
+  module.exports = { updateFoodTruck,createTruck ,findtruck,updateOperatingHours,updateLocation};

@@ -15,48 +15,23 @@ function TruckDashboard() {
   const [activeTab, setActiveTab] = useState("menu");
   const { truck } = useTruck();
   const { user } = useAuth();
-  const [navlinks,setNavlinks]=useState([])
+  const [navlinks, setNavlinks] = useState([]);
   useEffect(() => {
     if (truck) {
       setTruckId(truck._id);
     }
-    if (truck?.subscription.plan ==='premium') {
-      setNavlinks(["menu", "about", "hours", "location"])
-    }else{
-      setNavlinks(["menu", "about", "hours", "location", "subscription"])
+    if (truck?.subscription.plan === "premium") {
+      setNavlinks(["menu", "about", "hours", "location"]);
+    } else {
+      setNavlinks(["menu", "about", "hours", "location", "subscription"]);
     }
   }, [truck]);
   // State for truck information
-  const [operatingHours, setOperatingHours] = useState({
-    Monday: { open: "11:00", close: "20:00", isOpen: true },
-    Tuesday: { open: "11:00", close: "20:00", isOpen: true },
-    Wednesday: { open: "11:00", close: "20:00", isOpen: true },
-    Thursday: { open: "11:00", close: "20:00", isOpen: true },
-    Friday: { open: "11:00", close: "22:00", isOpen: true },
-    Saturday: { open: "12:00", close: "22:00", isOpen: true },
-    Sunday: { open: "12:00", close: "20:00", isOpen: false },
-  });
-
-  const [location, setLocation] = useState({
-    address: "123 Food Truck Lane, City",
-    coordinates: { lat: 40.7128, lng: -74.006 },
-  });
 
   const [stats] = useState({
     favorites: 156,
     reviews: 24,
   });
-
-  const handleUpdateHours = (day, field, value) => {
-    setOperatingHours((prev) => ({
-      ...prev,
-      [day]: { ...prev[day], [field]: value },
-    }));
-  };
-
-  const handleUpdateLocation = () => {
-    // Update location logic
-  };
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -67,7 +42,7 @@ function TruckDashboard() {
             <h1 className="text-2xl font-bold text-gray-900">
               <span className=" capitalize">{user.name}'s</span> Dashboard
             </h1>
-            <div className="flex items-center space-x-4">
+            {/* <div className="flex items-center space-x-4">
               <button
                 onClick={() => setIsOpen(!isOpen)}
                 className={`px-4 py-2 rounded-full flex items-center ${
@@ -77,7 +52,7 @@ function TruckDashboard() {
                 <Power className="w-4 h-4 mr-2" />
                 {isOpen ? "Open" : "Closed"}
               </button>
-            </div>
+            </div> */}
           </div>
         </div>
       </header>
@@ -93,21 +68,19 @@ function TruckDashboard() {
               className="flex space-x-8 px-6 overflow-x-auto"
               aria-label="Tabs"
             >
-              {navlinks.map(
-                (tab) => (
-                  <button
-                    key={tab}
-                    onClick={() =>setActiveTab(tab)}
-                    className={`py-4 px-1 border-b-2 font-medium text-sm whitespace-nowrap ${
-                      activeTab === tab
-                        ? "border-primary text-primary"
-                        : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
-                    }`}
-                  >
-                    {tab.charAt(0).toUpperCase() + tab.slice(1)}
-                  </button>
-                )
-              )}
+              {navlinks.map((tab) => (
+                <button
+                  key={tab}
+                  onClick={() => setActiveTab(tab)}
+                  className={`py-4 px-1 border-b-2 font-medium text-sm whitespace-nowrap ${
+                    activeTab === tab
+                      ? "border-primary text-primary"
+                      : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
+                  }`}
+                >
+                  {tab.charAt(0).toUpperCase() + tab.slice(1)}
+                </button>
+              ))}
             </nav>
           </div>
 
@@ -118,14 +91,9 @@ function TruckDashboard() {
 
             {activeTab === "hours" && <HoursTab />}
 
-            {activeTab === "location" && (
-              <LocationTab
-                location={location}
-                handleUpdateLocation={handleUpdateLocation}
-              />
-            )}
+            {activeTab === "location" && <LocationTab />}
 
-            {activeTab === "subscription"  && <SubscriptionTab />}
+            {activeTab === "subscription" && <SubscriptionTab />}
           </div>
         </div>
       </main>

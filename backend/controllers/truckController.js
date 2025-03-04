@@ -139,6 +139,25 @@ const updateTruckOperatingHours = async (req, res) => {
   }
 };
 
+const updateTruckLocation = async (req, res) => {
+  const truckId  = req.params.id;
+  const { lat, lng } = req.body;
+
+  if (!lat || !lng) {
+    return res.status(400).json({ message: "Latitude and longitude are required." });
+  }
+
+  try {
+    const updatedTruck = await truckService.updateLocation(truckId, lat, lng);
+    if (!updatedTruck) {
+      return res.status(404).json({ message: "Food truck not found." });
+    }
+    res.status(200).json({ message: "Location updated successfully", data: {...updatedTruck.location.coordinates} });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
 module.exports = {
   registerTruck,
   addItem,
@@ -147,4 +166,5 @@ module.exports = {
   deleteMenuItem,
   updateTruckController,
   updateTruckOperatingHours,
+  updateTruckLocation
 };

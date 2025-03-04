@@ -33,16 +33,10 @@ const foodTruckSchema = new Schema(
       unique: true,
     },
     location: {
-      type: {
-        type: String,
-        enum: ["Point"],
-        default: "Point",
-      },
       coordinates: {
         type: [Number],
         required: true,
       },
-      address: String,
       updatedAt: {
         type: Date,
         default: Date.now,
