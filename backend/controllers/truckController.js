@@ -171,6 +171,18 @@ const updateTruckSubscription = async (req, res) => {
   }
 };
 
+const getAllTrucks = async (req,res) => {
+  try {
+    const trucks = await truckService.getTrucks()
+    if(!trucks.length>0){
+      return res.status(400).json({ message: "No Food truck are found." })
+    }
+    return res.status(200).json({ message: "Subscription updated successfully", data: trucks })
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+}
+
 module.exports = {
   registerTruck,
   addItem,
@@ -180,5 +192,6 @@ module.exports = {
   updateTruckController,
   updateTruckOperatingHours,
   updateTruckLocation,
-  updateTruckSubscription
+  updateTruckSubscription,
+  getAllTrucks
 };

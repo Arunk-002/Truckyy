@@ -103,4 +103,13 @@ const createTruck = async ({ userId, name, gstInfo }) => {
       throw new Error("Error updating subscription: " + error.message);
     }
   };
-  module.exports = { updateFoodTruck,createTruck ,findtruck,updateOperatingHours,updateLocation,updateSubscription};
+
+const getTrucks  =  async () => {
+  try {
+    const trucks = await FoodTruck.find().select("name cuisineType rating image location");
+    return trucks
+  } catch (error) {
+    throw new Error('Error getting the trucks ' + error.message )
+  }
+}
+  module.exports = { updateFoodTruck,createTruck ,findtruck,updateOperatingHours,updateLocation,updateSubscription,getTrucks};

@@ -77,10 +77,6 @@ const foodTruckSchema = new Schema(
       },
     },
     stats: {
-      views: {
-        type: Number,
-        default: 0,
-      },
       favorites: {
         type: Number,
         default: 0,

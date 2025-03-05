@@ -1,6 +1,8 @@
 const express = require("express");
 const { authenticateToken } = require("../middlewares/auth");
-const { registerTruck, addItem, getTruck, getMenuItems, deleteMenuItem, updateTruckController, updateTruckOperatingHours, updateTruckLocation, updateTruckSubscription } = require("../controllers/truckController");
+const { registerTruck, addItem, getTruck, getMenuItems, deleteMenuItem, 
+    updateTruckController, updateTruckOperatingHours, updateTruckLocation,
+     updateTruckSubscription, getAllTrucks } = require("../controllers/truckController");
 const {upload} =require('../middlewares/imageUpload');
 
 const router = express.Router();
@@ -13,6 +15,7 @@ router.put('/:id/update-location',authenticateToken,updateTruckLocation)
 router.get('/:id/update-subscription',authenticateToken,updateTruckSubscription)
 
 router.post('/register',authenticateToken,upload.single('image'),registerTruck)
+router.get('/',getAllTrucks)
 router.post('/add-item',authenticateToken,addItem) 
 
 module.exports = router;

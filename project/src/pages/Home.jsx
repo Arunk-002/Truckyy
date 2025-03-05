@@ -1,57 +1,14 @@
-import React, { useState, useMemo } from 'react';
+import React, { useEffect, useState,useMemo } from 'react';
 import { Map, List } from 'lucide-react';
 import Navbar from '../components/Navbar';
 import FilterSidebar from '../components/FilterSidebar';
 import TruckCard from '../components/TruckCard';
+import axiosInstance from '../axios/axios';
 
-const SAMPLE_TRUCKS = [
-  {
-    id: 1,
-    name: "Taco Truck Deluxe",
-    cuisine: "Mexican",
-    rating: 4.8,
-    reviews: 234,
-    distance: 0.3,
-    price: 2,
-    hours: "Open until 10PM",
-    image: "https://images.unsplash.com/photo-1565123409695-7b5ef63a2efb?auto=format&fit=crop&w=400&h=300"
-  },
-  {
-    id: 2,
-    name: "Burger Paradise",
-    cuisine: "American",
-    rating: 4.6,
-    reviews: 186,
-    distance: 0.5,
-    price: 3,
-    hours: "Open until 9PM",
-    image: "https://images.unsplash.com/photo-1561758033-7e924f619b47?auto=format&fit=crop&w=400&h=300"
-  },
-  {
-    id: 3,
-    name: "Pasta Express",
-    cuisine: "Italian",
-    rating: 4.2,
-    reviews: 156,
-    distance: 1.2,
-    price: 2,
-    hours: "Open until 8PM",
-    image: "https://images.unsplash.com/photo-1516100882582-96c3a05fe590?auto=format&fit=crop&w=400&h=300"
-  },
-  {
-    id: 4,
-    name: "Sushi on Wheels",
-    cuisine: "Asian",
-    rating: 4.9,
-    reviews: 312,
-    distance: 0.8,
-    price: 4,
-    hours: "Open until 11PM",
-    image: "https://images.unsplash.com/photo-1579871494447-9811cf80d66c?auto=format&fit=crop&w=400&h=300"
-  }
-];
+
 
 function Home() {
+  const [AllTrucks,setALlTrucks] = useState([])
   const [viewMode, setViewMode] = useState('list');
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCuisine, setSelectedCuisine] = useState("All");
@@ -60,8 +17,25 @@ function Home() {
   const [selectedPrice, setSelectedPrice] = useState("$$$$");
   const [isMobileFiltersOpen, setIsMobileFiltersOpen] = useState(false);
 
+  useEffect(()=>{
+    getAllTrucks()
+  },[])
+  const getAllTrucks = async () => {
+    try {
+      const response = await axiosInstance.get('/trucks/')
+      if(response.status === 200){
+        console.log(response.data.data);
+        setALlTrucks(response.data.data)
+      }
+    } catch (error) {
+      console.log(error.message);
+      
+    }
+    
+  }
+
   const filteredTrucks = useMemo(() => {
-    return SAMPLE_TRUCKS.filter(truck => {
+    return AllTrucks.filter(truck => {
       if (searchQuery && !truck.name.toLowerCase().includes(searchQuery.toLowerCase()) &&
           !truck.cuisine.toLowerCase().includes(searchQuery.toLowerCase())) {
         return false;
