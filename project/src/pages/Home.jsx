@@ -1,14 +1,12 @@
-import React, { useEffect, useState,useMemo } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import { Map, List } from 'lucide-react';
 import Navbar from '../components/Navbar';
 import FilterSidebar from '../components/FilterSidebar';
 import TruckCard from '../components/TruckCard';
 import axiosInstance from '../axios/axios';
 
-
-
 function Home() {
-  const [AllTrucks,setALlTrucks] = useState([])
+  const [AllTrucks, setAllTrucks] = useState([]);
   const [viewMode, setViewMode] = useState('list');
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCuisine, setSelectedCuisine] = useState("All");
@@ -17,45 +15,48 @@ function Home() {
   const [selectedPrice, setSelectedPrice] = useState("$$$$");
   const [isMobileFiltersOpen, setIsMobileFiltersOpen] = useState(false);
 
-  useEffect(()=>{
-    getAllTrucks()
-  },[])
+  useEffect(() => {
+    getAllTrucks();
+  }, []);
+
   const getAllTrucks = async () => {
     try {
-      const response = await axiosInstance.get('/trucks/')
-      if(response.status === 200){
+      const response = await axiosInstance.get('/trucks/');
+      if (response.status === 200) {
         console.log(response.data.data);
-        setALlTrucks(response.data.data)
+        setAllTrucks(response.data.data);
       }
     } catch (error) {
       console.log(error.message);
-      
     }
-    
-  }
+  };
 
   const filteredTrucks = useMemo(() => {
     return AllTrucks.filter(truck => {
-      if (searchQuery && !truck.name.toLowerCase().includes(searchQuery.toLowerCase()) &&
-          !truck.cuisine.toLowerCase().includes(searchQuery.toLowerCase())) {
+      // Filter by search query: check in name and cuisineType array
+      if (searchQuery && !(
+        truck.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        truck.cuisineType.join(" ").toLowerCase().includes(searchQuery.toLowerCase())
+      )) {
         return false;
       }
-      if (selectedCuisine !== "All" && truck.cuisine !== selectedCuisine) {
+
+      // Filter by selected cuisine: if not "All", check if truck.cuisineType contains it
+      if (selectedCuisine !== "All" && !truck.cuisineType.includes(selectedCuisine)) {
         return false;
       }
-      if (truck.distance > parseFloat(selectedDistance)) {
+
+      // Since the backend data doesn't include distance and price, these filters are omitted.
+      // If you plan to implement them later, calculate distance from truck.location.coordinates or add a price field.
+
+      // Filter by rating using truck.rating.average
+      if (truck.rating && truck.rating.average < parseFloat(selectedRating)) {
         return false;
       }
-      if (truck.rating < parseFloat(selectedRating)) {
-        return false;
-      }
-      const maxPrice = selectedPrice.length;
-      if (truck.price > maxPrice) {
-        return false;
-      }
+
       return true;
     });
-  }, [searchQuery, selectedCuisine, selectedDistance, selectedRating, selectedPrice]);
+  }, [AllTrucks, searchQuery, selectedCuisine, selectedRating]);
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -116,7 +117,7 @@ function Home() {
                   </div>
                 ) : (
                   filteredTrucks.map(truck => (
-                    <TruckCard key={truck.id} truck={truck} />
+                    <TruckCard key={truck._id} truck={truck} />
                   ))
                 )}
               </div>
