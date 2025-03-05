@@ -1,6 +1,6 @@
 const express = require("express");
 const { userCreation ,userLogin, tokenAuth, logout, sendEmail, verifyOTP} = require("../controllers/authController");
-const {getUserProfile, updateUserProfile} = require('../controllers/userController')
+const {getUserProfile, updateUserProfile, handleFavoriteToggle} = require('../controllers/userController')
 const { authenticateToken } = require("../middlewares/auth");
 
 const router = express.Router();
@@ -8,6 +8,8 @@ const router = express.Router();
 // Route for creating a new user
 
 router.put('/update/:id',authenticateToken,updateUserProfile)
+
+router.post('/favourite',authenticateToken,handleFavoriteToggle)
 router.post('/verify-otp',verifyOTP)
 router.post('/send-email',sendEmail)
 router.get('/refresh-token',tokenAuth)

@@ -10,15 +10,25 @@ import {
 } from "lucide-react";
 import Navbar from "../components/Navbar";
 import axiosInstance from "../axios/axios";
-import { MapContainer, TileLayer ,Marker} from "react-leaflet";
+import { MapContainer, TileLayer, Marker } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
+import { useAuth } from "../context/AuthContext";
+import { notifyMessage } from "../toasts/toast";
 function TruckDetail() {
+  const { user } = useAuth();
   const [truck, setTruck] = useState(null); // Initialize as null
+  const  [fav,setFav] = useState(false)
   const { id } = useParams();
 
   useEffect(() => {
     getTruck();
-  }, [id]);
+  }, [id,user]);
+
+  const shareTruck = () => {
+    const truckURL = `${window.location.origin}/truck/${truck._id}`;
+    navigator.clipboard.writeText(truckURL);
+    notifyMessage("Truck link copied to clipboard!");
+  };
 
   const getTruck = async () => {
     try {
@@ -26,9 +36,28 @@ function TruckDetail() {
       if (response.status === 200) {
         console.log(response.data.truck);
         setTruck(response.data.truck);
+        setFav(user.favorites.includes(response.data.truck._id))
+        console.log(user.favorites.includes(response.data.truck._id));
+        
       }
     } catch (error) {
       console.log(error.message);
+    }
+  };
+
+  const favourite = async () => {
+    try {
+      const response = await axiosInstance.post("/users/favourite", {
+        userId:user._id,
+        truckId:id,
+      });
+      if(response.status ===200){
+        notifyMessage(response.data.message)
+      }
+      setFav((prev)=>!prev)
+    } catch (error) {
+      console.error("Error toggling favorite:", error.response?.data || error.message);
+      return { success: false, error: error.response?.data || error.message };
     }
   };
 
@@ -87,15 +116,25 @@ function TruckDetail() {
             <Navigation className="w-5 h-5" />
             <span>Directions</span>
           </button>
-          <button className="flex items-center justify-center space-x-2 bg-white text-gray-700 py-3 rounded-lg hover:bg-gray-50 transition-colors border border-gray-200">
-            <Heart className="w-5 h-5" />
-            <span>Favorite</span>
-          </button>
-          <button className="flex items-center justify-center space-x-2 bg-white text-gray-700 py-3 rounded-lg hover:bg-gray-50 transition-colors border border-gray-200">
-            <MessageSquare className="w-5 h-5" />
-            <span>Review</span>
-          </button>
-          <button className="flex items-center justify-center space-x-2 bg-white text-gray-700 py-3 rounded-lg hover:bg-gray-50 transition-colors border border-gray-200">
+          {user ? (
+            <>
+              <button
+                 onClick={favourite}
+                 className="flex items-center justify-center space-x-2 bg-white text-gray-700 py-3 rounded-lg hover:bg-gray-50 transition-colors border border-gray-200">
+                {fav ?  <Heart className="w-5 h-5 text-primary fill-current" /> : <Heart className="w-5 h-5" />}
+                <span>Favorite</span>
+              </button>
+              <button className="flex items-center justify-center space-x-2 bg-white text-gray-700 py-3 rounded-lg hover:bg-gray-50 transition-colors border border-gray-200">
+                <MessageSquare className="w-5 h-5" />
+                <span>Review</span>
+              </button>
+            </>
+          ) : (
+            ""
+          )}
+          <button
+          onClick={shareTruck}
+          className="flex items-center justify-center space-x-2 bg-white text-gray-700 py-3 rounded-lg hover:bg-gray-50 transition-colors border border-gray-200">
             <Share2 className="w-5 h-5" />
             <span>Share</span>
           </button>
@@ -107,7 +146,10 @@ function TruckDetail() {
             <h2 className="text-xl font-semibold mb-4">Current Location</h2>
             <div className="bg-gray-100 h-[200px] rounded-lg mb-4 flex items-center justify-center text-gray-500">
               <MapContainer
-                center={[truck.location.coordinates[1], truck.location.coordinates[0]]}
+                center={[
+                  truck.location.coordinates[1],
+                  truck.location.coordinates[0],
+                ]}
                 zoom={14}
                 style={{ height: "200px", width: "100%" }}
                 scrollWheelZoom={false}
@@ -167,11 +209,14 @@ function TruckDetail() {
           {/* Fix About */}
         </div>
 
-        {/* Stats */}
+        {/* Reviews */}
         <div className="bg-white rounded-lg shadow-sm p-6 mt-6">
-          <h2 className="text-xl font-semibold mb-4">Stats</h2>
-          <p className="text-gray-700">Views: {truck.stats.views}</p>
-          <p className="text-gray-700">Favorites: {truck.stats.favorites}</p>
+          <div className="flex justify-between items-center">
+            <h2 className="text-xl font-semibold">Reviews</h2>
+            <button className="text-primary hover:text-primary/80 transition-colors">
+              See All
+            </button>
+          </div>
         </div>
       </main>
     </div>

@@ -26,13 +26,6 @@ function TruckDashboard() {
       setNavlinks(["menu", "about", "hours", "location", "subscription"]);
     }
   }, [truck]);
-  // State for truck information
-
-  const [stats] = useState({
-    favorites: 156,
-    reviews: 24,
-  });
-
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
@@ -59,7 +52,7 @@ function TruckDashboard() {
 
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <StatsCards stats={stats} />
+        <StatsCards />
 
         {/* Tabs */}
         <div className="bg-white rounded-lg shadow-sm mb-8">

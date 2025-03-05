@@ -1,5 +1,6 @@
 const User = require("../models/User");
 const OTP = require("../models/OTP");
+const FoodTruck = require('../models/Foodtruck')
 // Function to create a new user
 const createUser = async (userData) => {
   try {
@@ -9,13 +10,13 @@ const createUser = async (userData) => {
   }
 };
 
-//Function to check if user exists
+
 const findUser = async (email) => {
   try {
     const user = await User.findOne({ email });
     return user || false;
   } catch (error) {
-    return new Error(error.message); // Corrected
+    return new Error(error.message);
   }
 };
 
@@ -60,4 +61,34 @@ const updateUserField = async (id, field, data) => {
   return user;
 };
 
-module.exports = { createUser, findUser, findUserById,findOtp,deleteOtp,updateUser,updateUserField };
+
+const toggleFavorite = async (userId, truckId) => {
+  try {
+    
+    const truck = await FoodTruck.findById(truckId);
+    if (!truck) throw new Error("Food truck not found");
+
+    
+    const user = await User.findById(userId);
+    if (!user) throw new Error("User not found");
+
+    const isFavorited = user.favorites.includes(truckId);
+
+    if (isFavorited) {
+      
+      await User.findByIdAndUpdate(userId, { $pull: { favorites: truckId } });
+      await FoodTruck.findByIdAndUpdate(truckId, { $inc: { "stats.favorites": -1 } });
+
+      return { success: true, message: "Truck removed from favorites", favorited: false };
+    } else {
+      
+      await User.findByIdAndUpdate(userId, { $addToSet: { favorites: truckId } });
+      await FoodTruck.findByIdAndUpdate(truckId, { $inc: { "stats.favorites": 1 } });
+
+      return { success: true, message: "Truck added to favorites", favorited: true };
+    }
+  } catch (error) {
+    throw new Error(error.message);
+  }
+};
+module.exports = { createUser, findUser, findUserById,findOtp,deleteOtp,updateUser,updateUserField,toggleFavorite };

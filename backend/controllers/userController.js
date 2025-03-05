@@ -40,7 +40,23 @@ console.log(updatedUser);
   }
 };
 
+const handleFavoriteToggle = async (req, res) => {
+  try {
+    const { userId, truckId } = req.body;
+    if (!userId || !truckId) return res.status(400).json({ error: "Missing userId or truckId" });
+
+    const result = await userService.toggleFavorite(userId, truckId);
+    if(result){
+      return res.status(200).json(result);
+
+    }
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
 module.exports = {
   getUserProfile,
   updateUserProfile,
+  handleFavoriteToggle
 };

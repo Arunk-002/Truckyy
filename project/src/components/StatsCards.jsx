@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { Heart, Menu, Crown } from 'lucide-react';
 import { useTruck } from '../context/TruckContext';
-function StatsCards({ stats }) {
+function StatsCards() {
   const {truck} = useTruck()
   useEffect(()=>{
   },[truck])
@@ -12,7 +12,7 @@ function StatsCards({ stats }) {
         <div className="flex items-center justify-between">
           <div className={(truck?.subscription.plan==='free')?" blur-md":''}>
             <p className="text-sm text-gray-600">Total Favorites</p>
-            <h3 className="text-2xl font-bold text-gray-900">{stats.favorites}</h3>
+            <h3 className="text-2xl font-bold text-gray-900">{truck?.stats.favorites}</h3>
           </div>
           <Heart className="w-8 h-8 text-primary" />
         </div>
@@ -21,11 +21,11 @@ function StatsCards({ stats }) {
         <div className="flex items-center justify-between">
           <div className={(truck?.subscription.plan==='free')?" blur-md":''}>
             <p className="text-sm text-gray-600">Total Reviews</p>
-            <h3 className="text-2xl font-bold text-gray-900">{stats.reviews}</h3>
+            <h3 className="text-2xl font-bold text-gray-900">{truck?.stats.reviews}</h3>
           </div>
           <Menu className="w-8 h-8 text-secondary" />
         </div>
-      </div>
+      </div>  
     </div>
   );
 }

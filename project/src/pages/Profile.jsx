@@ -204,10 +204,7 @@ function Profile() {
             <div className="space-y-6">
               <div className="bg-white rounded-lg shadow-sm p-6">
                 <div className="flex justify-between items-center mb-6">
-                  <h2 className="text-xl font-semibold">Recent Favorites</h2>
-                  <button className="text-primary hover:text-primary/80">
-                    See All
-                  </button>
+                  <h2 className="text-xl font-semibold"> Favorites</h2>
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                   {/* {curUser.favorites.map(favorite => (
