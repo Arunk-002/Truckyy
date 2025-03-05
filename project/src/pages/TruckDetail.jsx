@@ -16,7 +16,7 @@ import { useAuth } from "../context/AuthContext";
 import { notifyMessage } from "../toasts/toast";
 function TruckDetail() {
   const { user } = useAuth();
-  const [truck, setTruck] = useState(null); // Initialize as null
+  const [truck, setTruck] = useState(null);
   const  [fav,setFav] = useState(false)
   const { id } = useParams();
 
