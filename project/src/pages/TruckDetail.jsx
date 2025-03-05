@@ -1,51 +1,44 @@
-import React from 'react';
-import { useParams } from 'react-router-dom';
-import { MapPin, Star, Clock, DollarSign, Navigation, Heart, MessageSquare, Share2 } from 'lucide-react';
-import Navbar from '../components/Navbar';
-
-const SAMPLE_TRUCK = {
-  id: 1,
-  name: "Taco King Food Truck",
-  cuisine: "Mexican, Tacos, Street Food",
-  rating: 4.7,
-  reviews: 125,
-  distance: 0.3,
-  price: 2,
-  hours: {
-    Monday: "11:00 AM - 8:00 PM",
-    Tuesday: "11:00 AM - 8:00 PM",
-    Wednesday: "11:00 AM - 8:00 PM",
-    Thursday: "11:00 AM - 8:00 PM",
-    Friday: "11:00 AM - 10:00 PM",
-    Saturday: "12:00 PM - 10:00 PM",
-    Sunday: "CLOSED"
-  },
-  location: "123 Main Street, San Francisco, CA",
-  lastUpdated: "10 minutes ago",
-  image: "https://images.unsplash.com/photo-1565123409695-7b5ef63a2efb?auto=format&fit=crop&w=1200&h=400",
-  about: "Taco King is family-owned food truck serving authentic Mexican street food. Our recipes have been passed down for generations, bringing the true flavors of Mexico to your neighborhood. We use only the freshest ingredients and make everything fresh daily. From our homemade tortillas to our signature salsas, every bite is crafted with love and tradition. Visit us and experience the royal treatment at Taco King!",
-  popularItems: [
-    {
-      name: "Carne Asada Taco",
-      description: "Grilled steak with onions, cilantro, and homemade salsa",
-      price: 3.99
-    },
-    {
-      name: "Chicken Quesadilla",
-      description: "Grilled chicken with cheese, onions, and peppers",
-      price: 7.99
-    },
-    {
-      name: "Horchata",
-      description: "Traditional Mexican rice drink with cinnamon",
-      price: 2.50
-    }
-  ]
-};
-
+import React, { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
+import {
+  MapPin,
+  Star,
+  Navigation,
+  Heart,
+  MessageSquare,
+  Share2,
+} from "lucide-react";
+import Navbar from "../components/Navbar";
+import axiosInstance from "../axios/axios";
+import { MapContainer, TileLayer ,Marker} from "react-leaflet";
+import "leaflet/dist/leaflet.css";
 function TruckDetail() {
+  const [truck, setTruck] = useState(null); // Initialize as null
   const { id } = useParams();
-  const truck = SAMPLE_TRUCK; // In real app, fetch truck data based on id
+
+  useEffect(() => {
+    getTruck();
+  }, [id]);
+
+  const getTruck = async () => {
+    try {
+      const response = await axiosInstance.get(`/trucks/${id}/details`);
+      if (response.status === 200) {
+        console.log(response.data.truck);
+        setTruck(response.data.truck);
+      }
+    } catch (error) {
+      console.log(error.message);
+    }
+  };
+
+  if (!truck) {
+    return (
+      <div className="min-h-screen flex justify-center items-center">
+        <p className="text-gray-600 text-lg">Loading...</p>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -61,17 +54,28 @@ function TruckDetail() {
               className="w-full h-full object-cover"
             />
           </div>
-          
+
           <div className="p-6">
             <div className="flex justify-between items-start">
               <div>
-                <h1 className="text-3xl font-bold text-gray-900">{truck.name}</h1>
-                <p className="text-gray-600 mt-1">{truck.cuisine}</p>
+                <h1 className="text-3xl capitalize font-bold text-gray-900">
+                  {truck.name}
+                </h1>
+                <p className="text-gray-600 mt-1 font-semibold">
+                  {truck.cuisineType.join(", ")}
+                </p>{" "}
+                {/* Cuisine Fix */}
               </div>
               <div className="flex items-center space-x-2 bg-primary/10 px-4 py-2 rounded-full">
                 <Star className="w-6 h-6 text-primary fill-current" />
-                <span className="text-xl font-semibold">{truck.rating}</span>
-                <span className="text-gray-600">({truck.reviews})</span>
+                <span className="text-xl font-semibold">
+                  {truck.rating.average.toFixed(1)}
+                </span>{" "}
+                {/* Rating Fix */}
+                <span className="text-gray-600">
+                  ({truck.rating.count} reviews)
+                </span>{" "}
+                {/* Reviews Fix */}
               </div>
             </div>
           </div>
@@ -102,13 +106,31 @@ function TruckDetail() {
           <div className="bg-white rounded-lg shadow-sm p-6">
             <h2 className="text-xl font-semibold mb-4">Current Location</h2>
             <div className="bg-gray-100 h-[200px] rounded-lg mb-4 flex items-center justify-center text-gray-500">
-              Map Component Here
+              <MapContainer
+                center={[truck.location.coordinates[1], truck.location.coordinates[0]]}
+                zoom={14}
+                style={{ height: "200px", width: "100%" }}
+                scrollWheelZoom={false}
+              >
+                <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
+                <Marker
+                  position={[
+                    truck.location.coordinates[1],
+                    truck.location.coordinates[0],
+                  ]}
+                />
+              </MapContainer>
             </div>
             <div className="flex items-start space-x-2">
               <MapPin className="w-5 h-5 text-primary mt-1" />
               <div>
-                <p className="text-gray-800">{truck.location}</p>
-                <p className="text-gray-500 text-sm">Updated {truck.lastUpdated}</p>
+                <p className="text-gray-800">
+                  {`Latitude: ${truck.location.coordinates[1]}, Longitude: ${truck.location.coordinates[0]}`}
+                </p>{" "}
+                {/* Fix Location */}
+                <p className="text-gray-500 text-sm">
+                  Updated {new Date(truck.location.updatedAt).toLocaleString()}
+                </p>
               </div>
             </div>
           </div>
@@ -117,12 +139,19 @@ function TruckDetail() {
           <div className="bg-white rounded-lg shadow-sm p-6">
             <h2 className="text-xl font-semibold mb-4">Operating Hours</h2>
             <div className="space-y-3">
-              {Object.entries(truck.hours).map(([day, hours]) => (
+              {Object.entries(truck.operatingHours).map(([day, hours]) => (
                 <div key={day} className="flex justify-between items-center">
                   <span className="text-gray-700">{day}</span>
-                  <span className={hours === "CLOSED" ? "text-red-500 font-medium" : "text-gray-900"}>
-                    {hours}
-                  </span>
+                  <span
+                    className={
+                      hours.isOpen
+                        ? "text-gray-900"
+                        : "text-red-500 font-medium"
+                    }
+                  >
+                    {hours.isOpen ? `${hours.open} - ${hours.close}` : "CLOSED"}
+                  </span>{" "}
+                  {/* Fix Operating Hours */}
                 </div>
               ))}
             </div>
@@ -132,41 +161,17 @@ function TruckDetail() {
         {/* About Section */}
         <div className="bg-white rounded-lg shadow-sm p-6 mt-6">
           <h2 className="text-xl font-semibold mb-4">About</h2>
-          <p className="text-gray-700 leading-relaxed">{truck.about}</p>
+          <p className="text-gray-700 leading-relaxed">
+            {truck.description}
+          </p>{" "}
+          {/* Fix About */}
         </div>
 
-        {/* Menu Section */}
+        {/* Stats */}
         <div className="bg-white rounded-lg shadow-sm p-6 mt-6">
-          <h2 className="text-xl font-semibold mb-4">Popular Menu Items</h2>
-          <div className="space-y-4">
-            {truck.popularItems.map((item, index) => (
-              <div
-                key={index}
-                className="bg-gray-50 p-4 rounded-lg flex justify-between items-start"
-              >
-                <div>
-                  <h3 className="font-semibold text-gray-900">{item.name}</h3>
-                  <p className="text-gray-600 mt-1">{item.description}</p>
-                </div>
-                <span className="font-semibold text-gray-900">
-                  ${item.price.toFixed(2)}
-                </span>
-              </div>
-            ))}
-          </div>
-          <button className="mt-6 w-full sm:w-auto px-8 py-3 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors">
-            View Full Menu
-          </button>
-        </div>
-
-        {/* Reviews Preview */}
-        <div className="bg-white rounded-lg shadow-sm p-6 mt-6">
-          <div className="flex justify-between items-center">
-            <h2 className="text-xl font-semibold">Reviews ({truck.reviews})</h2>
-            <button className="text-primary hover:text-primary/80 transition-colors">
-              See All
-            </button>
-          </div>
+          <h2 className="text-xl font-semibold mb-4">Stats</h2>
+          <p className="text-gray-700">Views: {truck.stats.views}</p>
+          <p className="text-gray-700">Favorites: {truck.stats.favorites}</p>
         </div>
       </main>
     </div>

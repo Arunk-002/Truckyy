@@ -29,6 +29,15 @@ const createTruck = async ({ userId, name, gstInfo }) => {
     }
   }
 
+  const findtruckById = async (id) => {
+    try {
+      const truck = await FoodTruck.findById(id)
+      return truck
+    } catch (error) {
+      throw new Error(error.message)
+    }
+  }
+
 
   const updateFoodTruck = async (truckId, updates) => {
     try {
@@ -112,4 +121,4 @@ const getTrucks  =  async () => {
     throw new Error('Error getting the trucks ' + error.message )
   }
 }
-  module.exports = { updateFoodTruck,createTruck ,findtruck,updateOperatingHours,updateLocation,updateSubscription,getTrucks};
+  module.exports = { updateFoodTruck,createTruck ,findtruck,updateOperatingHours,updateLocation,updateSubscription,getTrucks,findtruckById};

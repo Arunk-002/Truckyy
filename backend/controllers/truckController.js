@@ -183,6 +183,19 @@ const getAllTrucks = async (req,res) => {
   }
 }
 
+const getSingleTruck = async (req,res) => {
+  const id = req.params.id;
+  try {
+    if (!id) {
+      return res.status(400).json({ message: "no user id found" });
+    }
+    const result = await truckService.findtruckById(id);
+    res.status(200).json({ message: "truck found", truck: result });
+  } catch (error) {
+    res.status(400).json({ message: error.message });
+  }
+}
+
 module.exports = {
   registerTruck,
   addItem,
@@ -193,5 +206,6 @@ module.exports = {
   updateTruckOperatingHours,
   updateTruckLocation,
   updateTruckSubscription,
-  getAllTrucks
+  getAllTrucks,
+  getSingleTruck
 };

@@ -2,8 +2,6 @@ import React from 'react';
 import { MapPin, Star, Clock, DollarSign } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
-const PRICES = ["$", "$$", "$$$", "$$$$"];
-
 function TruckCard({ truck }) {
   return (
     <Link to={`/truck/${truck._id}`} className="block"> {/* Use _id instead of id */}
