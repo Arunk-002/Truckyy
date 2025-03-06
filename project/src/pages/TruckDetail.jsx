@@ -14,15 +14,28 @@ import { MapContainer, TileLayer, Marker } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import { useAuth } from "../context/AuthContext";
 import { notifyMessage } from "../toasts/toast";
+import ReviewsTab from "../components/ReviewsTab"; // Import the ReviewsTab component
+
+// Create a context provider to pass truck data to the ReviewsTab
+import { createContext } from "react";
+export const TruckContext = createContext();
+
+export const TruckProvider = ({ children, value }) => {
+  return (
+    <TruckContext.Provider value={value}>{children}</TruckContext.Provider>
+  );
+};
+
 function TruckDetail() {
   const { user } = useAuth();
   const [truck, setTruck] = useState(null);
-  const  [fav,setFav] = useState(false)
+  const [fav, setFav] = useState(false);
   const { id } = useParams();
+  const [showReviewsTab, setShowReviewsTab] = useState(false);
 
   useEffect(() => {
     getTruck();
-  }, [id,user]);
+  }, [id, user]);
 
   const shareTruck = () => {
     const truckURL = `${window.location.origin}/truck/${truck._id}`;
@@ -36,9 +49,10 @@ function TruckDetail() {
       if (response.status === 200) {
         console.log(response.data.truck);
         setTruck(response.data.truck);
-        setFav(user.favorites.includes(response.data.truck._id))
-        console.log(user.favorites.includes(response.data.truck._id));
-        
+        if (user && user.favorites) {
+          setFav(user.favorites.includes(response.data.truck._id));
+          console.log(user.favorites.includes(response.data.truck._id));
+        }
       }
     } catch (error) {
       console.log(error.message);
@@ -48,17 +62,25 @@ function TruckDetail() {
   const favourite = async () => {
     try {
       const response = await axiosInstance.post("/users/favourite", {
-        userId:user._id,
-        truckId:id,
+        userId: user._id,
+        truckId: id,
       });
-      if(response.status ===200){
-        notifyMessage(response.data.message)
+      if (response.status === 200) {
+        notifyMessage(response.data.message);
       }
-      setFav((prev)=>!prev)
+      setFav((prev) => !prev);
     } catch (error) {
-      console.error("Error toggling favorite:", error.response?.data || error.message);
+      console.error(
+        "Error toggling favorite:",
+        error.response?.data || error.message
+      );
       return { success: false, error: error.response?.data || error.message };
     }
+  };
+
+  // Toggle the reviews tab visibility
+  const toggleReviewsTab = () => {
+    setShowReviewsTab(!showReviewsTab);
   };
 
   if (!truck) {
@@ -70,156 +92,169 @@ function TruckDetail() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <Navbar setIsMobileFiltersOpen={() => {}} />
+    <TruckProvider value={{ truck }}>
+      <div className="min-h-screen bg-gray-50">
+        <Navbar setIsMobileFiltersOpen={() => {}} />
 
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Hero Section */}
-        <div className="bg-white rounded-lg shadow-sm overflow-hidden">
-          <div className="h-[300px] relative">
-            <img
-              src={truck.image}
-              alt={truck.name}
-              className="w-full h-full object-cover"
-            />
-          </div>
+        <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          {/* Hero Section */}
+          <div className="bg-white rounded-lg shadow-sm overflow-hidden">
+            <div className="h-[300px] relative">
+              <img
+                src={truck.image}
+                alt={truck.name}
+                className="w-full h-full object-cover"
+              />
+            </div>
 
-          <div className="p-6">
-            <div className="flex justify-between items-start">
-              <div>
-                <h1 className="text-3xl capitalize font-bold text-gray-900">
-                  {truck.name}
-                </h1>
-                <p className="text-gray-600 mt-1 font-semibold">
-                  {truck.cuisineType.join(", ")}
-                </p>{" "}
-                {/* Cuisine Fix */}
-              </div>
-              <div className="flex items-center space-x-2 bg-primary/10 px-4 py-2 rounded-full">
-                <Star className="w-6 h-6 text-primary fill-current" />
-                <span className="text-xl font-semibold">
-                  {truck.rating.average.toFixed(1)}
-                </span>{" "}
-                {/* Rating Fix */}
-                <span className="text-gray-600">
-                  ({truck.rating.count} reviews)
-                </span>{" "}
-                {/* Reviews Fix */}
+            <div className="p-6">
+              <div className="flex justify-between items-start">
+                <div>
+                  <h1 className="text-3xl capitalize font-bold text-gray-900">
+                    {truck.name}
+                  </h1>
+                  <p className="text-gray-600 mt-1 font-semibold">
+                    {truck.cuisineType.join(", ")}
+                  </p>
+                </div>
+                <div className="flex items-center space-x-2 bg-primary/10 px-4 py-2 rounded-full">
+                  <Star className="w-6 h-6 text-primary fill-current" />
+                  <span className="text-xl font-semibold">
+                    {truck.rating.average.toFixed(1)}
+                  </span>
+                  <span className="text-gray-600">
+                    ({truck.rating.count} reviews)
+                  </span>
+                </div>
               </div>
             </div>
           </div>
-        </div>
 
-        {/* Quick Actions */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mt-6">
-          <button className="flex items-center justify-center space-x-2 bg-primary text-white py-3 rounded-lg hover:bg-primary/90 transition-colors">
-            <Navigation className="w-5 h-5" />
-            <span>Directions</span>
-          </button>
-          {user ? (
-            <>
-              <button
-                 onClick={favourite}
-                 className="flex items-center justify-center space-x-2 bg-white text-gray-700 py-3 rounded-lg hover:bg-gray-50 transition-colors border border-gray-200">
-                {fav ?  <Heart className="w-5 h-5 text-primary fill-current" /> : <Heart className="w-5 h-5" />}
-                <span>Favorite</span>
-              </button>
-              <button className="flex items-center justify-center space-x-2 bg-white text-gray-700 py-3 rounded-lg hover:bg-gray-50 transition-colors border border-gray-200">
-                <MessageSquare className="w-5 h-5" />
-                <span>Review</span>
-              </button>
-            </>
-          ) : (
-            ""
-          )}
-          <button
-          onClick={shareTruck}
-          className="flex items-center justify-center space-x-2 bg-white text-gray-700 py-3 rounded-lg hover:bg-gray-50 transition-colors border border-gray-200">
-            <Share2 className="w-5 h-5" />
-            <span>Share</span>
-          </button>
-        </div>
+          {/* Quick Actions */}
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mt-6">
+            <button className="flex items-center justify-center space-x-2 bg-primary text-white py-3 rounded-lg hover:bg-primary/90 transition-colors">
+              <Navigation className="w-5 h-5" />
+              <span>Directions</span>
+            </button>
+            {user ? (
+              <>
+                <button
+                  onClick={favourite}
+                  className="flex items-center justify-center space-x-2 bg-white text-gray-700 py-3 rounded-lg hover:bg-gray-50 transition-colors border border-gray-200"
+                >
+                  {fav ? (
+                    <Heart className="w-5 h-5 text-primary fill-current" />
+                  ) : (
+                    <Heart className="w-5 h-5" />
+                  )}
+                  <span>Favorite</span>
+                </button>
+                <a
+                  href="#reviews"
+                  onClick={toggleReviewsTab}
+                  className="flex items-center justify-center space-x-2 bg-white text-gray-700 py-3 rounded-lg hover:bg-gray-50 transition-colors border border-gray-200"
+                >
+                  <MessageSquare className="w-5 h-5" />
+                  <span>Review</span>
+                </a>
+              </>
+            ) : (
+              ""
+            )}
+            <button
+              onClick={shareTruck}
+              className="flex items-center justify-center space-x-2 bg-white text-gray-700 py-3 rounded-lg hover:bg-gray-50 transition-colors border border-gray-200"
+            >
+              <Share2 className="w-5 h-5" />
+              <span>Share</span>
+            </button>
+          </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
-          {/* Location Section */}
-          <div className="bg-white rounded-lg shadow-sm p-6">
-            <h2 className="text-xl font-semibold mb-4">Current Location</h2>
-            <div className="bg-gray-100 h-[200px] rounded-lg mb-4 flex items-center justify-center text-gray-500">
-              <MapContainer
-                center={[
-                  truck.location.coordinates[1],
-                  truck.location.coordinates[0],
-                ]}
-                zoom={14}
-                style={{ height: "200px", width: "100%" }}
-                scrollWheelZoom={false}
-              >
-                <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
-                <Marker
-                  position={[
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
+            {/* Location Section */}
+            <div className="bg-white rounded-lg shadow-sm p-6">
+              <h2 className="text-xl font-semibold mb-4">Current Location</h2>
+              <div className="bg-gray-100 h-[200px] rounded-lg mb-4 flex items-center justify-center text-gray-500">
+                <MapContainer
+                  center={[
                     truck.location.coordinates[1],
                     truck.location.coordinates[0],
                   ]}
-                />
-              </MapContainer>
+                  zoom={14}
+                  style={{ height: "200px", width: "100%" }}
+                  scrollWheelZoom={false}
+                >
+                  <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
+                  <Marker
+                    position={[
+                      truck.location.coordinates[1],
+                      truck.location.coordinates[0],
+                    ]}
+                  />
+                </MapContainer>
+              </div>
+              <div className="flex items-start space-x-2">
+                <MapPin className="w-5 h-5 text-primary mt-1" />
+                <div>
+                  <p className="text-gray-800">
+                    {`Latitude: ${truck.location.coordinates[1]}, Longitude: ${truck.location.coordinates[0]}`}
+                  </p>
+                  <p className="text-gray-500 text-sm">
+                    Updated{" "}
+                    {new Date(truck.location.updatedAt).toLocaleString()}
+                  </p>
+                </div>
+              </div>
             </div>
-            <div className="flex items-start space-x-2">
-              <MapPin className="w-5 h-5 text-primary mt-1" />
-              <div>
-                <p className="text-gray-800">
-                  {`Latitude: ${truck.location.coordinates[1]}, Longitude: ${truck.location.coordinates[0]}`}
-                </p>{" "}
-                {/* Fix Location */}
-                <p className="text-gray-500 text-sm">
-                  Updated {new Date(truck.location.updatedAt).toLocaleString()}
-                </p>
+
+            {/* Hours Section */}
+            <div className="bg-white rounded-lg shadow-sm p-6">
+              <h2 className="text-xl font-semibold mb-4">Operating Hours</h2>
+              <div className="space-y-3">
+                {Object.entries(truck.operatingHours).map(([day, hours]) => (
+                  <div key={day} className="flex justify-between items-center">
+                    <span className="text-gray-700">{day}</span>
+                    <span
+                      className={
+                        hours.isOpen
+                          ? "text-gray-900"
+                          : "text-red-500 font-medium"
+                      }
+                    >
+                      {hours.isOpen
+                        ? `${hours.open} - ${hours.close}`
+                        : "CLOSED"}
+                    </span>
+                  </div>
+                ))}
               </div>
             </div>
           </div>
 
-          {/* Hours Section */}
-          <div className="bg-white rounded-lg shadow-sm p-6">
-            <h2 className="text-xl font-semibold mb-4">Operating Hours</h2>
-            <div className="space-y-3">
-              {Object.entries(truck.operatingHours).map(([day, hours]) => (
-                <div key={day} className="flex justify-between items-center">
-                  <span className="text-gray-700">{day}</span>
-                  <span
-                    className={
-                      hours.isOpen
-                        ? "text-gray-900"
-                        : "text-red-500 font-medium"
-                    }
-                  >
-                    {hours.isOpen ? `${hours.open} - ${hours.close}` : "CLOSED"}
-                  </span>{" "}
-                  {/* Fix Operating Hours */}
-                </div>
-              ))}
+          {/* About Section */}
+          <div className="bg-white rounded-lg shadow-sm p-6 mt-6">
+            <h2 className="text-xl font-semibold mb-4">About</h2>
+            <p className="text-gray-700 leading-relaxed">{truck.description}</p>
+          </div>
+
+          {/* Reviews */}
+          <div id="reviews" className="bg-white rounded-lg shadow-sm p-6 mt-6">
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-xl font-semibold">Reviews</h2>
+              <button
+                onClick={toggleReviewsTab}
+                className="text-primary hover:text-primary/80 transition-colors"
+              >
+                See All
+              </button>
             </div>
-          </div>
-        </div>
 
-        {/* About Section */}
-        <div className="bg-white rounded-lg shadow-sm p-6 mt-6">
-          <h2 className="text-xl font-semibold mb-4">About</h2>
-          <p className="text-gray-700 leading-relaxed">
-            {truck.description}
-          </p>{" "}
-          {/* Fix About */}
-        </div>
-
-        {/* Reviews */}
-        <div className="bg-white rounded-lg shadow-sm p-6 mt-6">
-          <div className="flex justify-between items-center">
-            <h2 className="text-xl font-semibold">Reviews</h2>
-            <button className="text-primary hover:text-primary/80 transition-colors">
-              See All
-            </button>
+            {/* Render the ReviewsTab component when showReviewsTab is true */}
+            {showReviewsTab && <ReviewsTab truckId={id} />}
           </div>
-        </div>
-      </main>
-    </div>
+        </main>
+      </div>
+    </TruckProvider>
   );
 }
 

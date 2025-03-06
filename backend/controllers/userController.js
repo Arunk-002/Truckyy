@@ -1,4 +1,5 @@
 const userService = require("../services/userService");
+const reviewService = require("../services/reviewService")
 
 const getUserProfile = async (req, res) => {
   try {
@@ -55,8 +56,40 @@ const handleFavoriteToggle = async (req, res) => {
   }
 };
 
+const createReview = async (req, res) => {
+  try {
+    const { truckId, rating, comment } = req.body;
+    const userId = req.params.id; 
+    if (!truckId || !rating) {
+      return res.status(400).json({ message: "Truck ID and rating are required" });
+    }
+    const reviewData = { userId, truckId, rating, comment };
+    const review = await reviewService.addReview(reviewData);
+    return res.status(201).json({ message: "Review added successfully", review });
+  } catch (error) {
+    return res.status(500).json({ message: error.message });
+  }
+};
+
+const getReviewsByTruck = async (req, res) => {
+  try {
+    const truckId  = req.params.id;
+
+    if (!truckId) {
+      return res.status(400).json({ message: "Truck ID is required" });
+    }
+
+    const reviews = await reviewService.getReviewsByTruck(truckId);
+    
+    return res.status(200).json(reviews);
+  } catch (error) {
+    return res.status(500).json({ message: "Failed to fetch reviews", error: error.message });
+  }
+};
 module.exports = {
   getUserProfile,
   updateUserProfile,
-  handleFavoriteToggle
+  handleFavoriteToggle,
+  createReview,
+  getReviewsByTruck
 };
