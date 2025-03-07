@@ -1,6 +1,6 @@
     const express = require("express");
 const { userCreation ,userLogin, tokenAuth, logout, sendEmail, verifyOTP} = require("../controllers/authController");
-const {getUserProfile, updateUserProfile, handleFavoriteToggle, createReview, getReviewsByTruck} = require('../controllers/userController')
+const {getUserProfile, updateUserProfile, handleFavoriteToggle, createReview, getReviewsByTruck,getUserFullProfile} = require('../controllers/userController')
 const { authenticateToken } = require("../middlewares/auth");
 
 const router = express.Router();
@@ -9,7 +9,8 @@ const router = express.Router();
 
 router.put('/update/:id',authenticateToken,updateUserProfile)
 router.post('/add-review/:id',authenticateToken,createReview)
-router.get('/get-reviews/:id',authenticateToken,getReviewsByTruck)
+router.get('/get-reviews/:id',getReviewsByTruck)
+router.get('/user-profile/:id',getUserFullProfile)
 
 router.post('/favourite',authenticateToken,handleFavoriteToggle)
 router.post('/verify-otp',verifyOTP)

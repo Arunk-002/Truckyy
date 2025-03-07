@@ -22,7 +22,7 @@ const findUser = async (email) => {
 
 const findUserById = async (id) => {
   try {
-    const user = await User.findById(id);
+    const user = await User.findById(id).populate('favorites',"name");
     return user || false;
   } catch (error) {
     return new Error(error.message);

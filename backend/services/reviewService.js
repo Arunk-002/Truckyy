@@ -15,8 +15,17 @@ const addReview = async (data) => {
     }
   };
   
+  const getUserReviews = async (userId) => {
+    try {
+      const reviews = await Reviews.find({userId:userId}).populate("truckId","name");
+      return reviews || false;
+    } catch (error) {
+      return new Error(error.message);
+    }
+  }
 
   module.exports = {
     addReview,
-    getReviewsByTruck
+    getReviewsByTruck,
+    getUserReviews
   }

@@ -149,18 +149,18 @@ function TruckDetail() {
                   )}
                   <span>Favorite</span>
                 </button>
-                <a
-                  href="#reviews"
-                  onClick={toggleReviewsTab}
-                  className="flex items-center justify-center space-x-2 bg-white text-gray-700 py-3 rounded-lg hover:bg-gray-50 transition-colors border border-gray-200"
-                >
-                  <MessageSquare className="w-5 h-5" />
-                  <span>Review</span>
-                </a>
               </>
             ) : (
               ""
             )}
+              <a
+                href="#reviews"
+                onClick={toggleReviewsTab}
+                className="flex items-center justify-center space-x-2 bg-white text-gray-700 py-3 rounded-lg hover:bg-gray-50 transition-colors border border-gray-200"
+              >
+                <MessageSquare className="w-5 h-5" />
+                <span>Review</span>
+              </a>
             <button
               onClick={shareTruck}
               className="flex items-center justify-center space-x-2 bg-white text-gray-700 py-3 rounded-lg hover:bg-gray-50 transition-colors border border-gray-200"

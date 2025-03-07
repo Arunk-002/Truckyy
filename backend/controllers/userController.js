@@ -32,8 +32,6 @@ const updateUserProfile = async (req, res) => {
     }
     
     const updatedUser = await userService.updateUser(userId, curUser);
-console.log(updatedUser);
-
     res.status(202).json(updatedUser);
   } catch (error) {
     console.error("Update user error:", error);
@@ -86,10 +84,25 @@ const getReviewsByTruck = async (req, res) => {
     return res.status(500).json({ message: "Failed to fetch reviews", error: error.message });
   }
 };
+
+const getUserFullProfile = async (req,res) => {
+  const userId = req.params.id
+  try {
+    if(!userId){
+      return res.status(400).json({ message: "User ID is required" });
+    }
+    const reviews = await reviewService.getUserReviews(userId);
+    const user = await userService.findUserById(userId);
+    return res.status(200).json({reviews:reviews,user:user});
+  } catch (error) {
+    return res.status(500).json({ message: "Failed to fetch reviews", error: error.message });
+  }
+}
 module.exports = {
   getUserProfile,
   updateUserProfile,
   handleFavoriteToggle,
   createReview,
-  getReviewsByTruck
+  getReviewsByTruck,
+  getUserFullProfile
 };
