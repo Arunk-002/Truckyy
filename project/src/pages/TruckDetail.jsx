@@ -28,6 +28,7 @@ export const TruckProvider = ({ children, value }) => {
 
 function TruckDetail() {
   const { user } = useAuth();
+  const [avgReview, setavgReview] = useState(0);
   const [truck, setTruck] = useState(null);
   const [fav, setFav] = useState(false);
   const { id } = useParams();
@@ -120,10 +121,7 @@ function TruckDetail() {
                 <div className="flex items-center space-x-2 bg-primary/10 px-4 py-2 rounded-full">
                   <Star className="w-6 h-6 text-primary fill-current" />
                   <span className="text-xl font-semibold">
-                    {truck.rating.average.toFixed(1)}
-                  </span>
-                  <span className="text-gray-600">
-                    ({truck.rating.count} reviews)
+                    {avgReview ? avgReview:"3"}
                   </span>
                 </div>
               </div>
@@ -153,14 +151,14 @@ function TruckDetail() {
             ) : (
               ""
             )}
-              <a
-                href="#reviews"
-                onClick={toggleReviewsTab}
-                className="flex items-center justify-center space-x-2 bg-white text-gray-700 py-3 rounded-lg hover:bg-gray-50 transition-colors border border-gray-200"
-              >
-                <MessageSquare className="w-5 h-5" />
-                <span>Review</span>
-              </a>
+            <a
+              href="#reviews"
+              onClick={toggleReviewsTab}
+              className="flex items-center justify-center space-x-2 bg-white text-gray-700 py-3 rounded-lg hover:bg-gray-50 transition-colors border border-gray-200"
+            >
+              <MessageSquare className="w-5 h-5" />
+              <span>Review</span>
+            </a>
             <button
               onClick={shareTruck}
               className="flex items-center justify-center space-x-2 bg-white text-gray-700 py-3 rounded-lg hover:bg-gray-50 transition-colors border border-gray-200"
@@ -250,7 +248,7 @@ function TruckDetail() {
             </div>
 
             {/* Render the ReviewsTab component when showReviewsTab is true */}
-            {showReviewsTab && <ReviewsTab truckId={id} />}
+            {showReviewsTab && <ReviewsTab setavgReview={setavgReview} truckId={id} />}
           </div>
         </main>
       </div>

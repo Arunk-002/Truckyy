@@ -33,7 +33,6 @@ function Profile() {
         `/users/user-profile/${user._id}`
       );
       if (response.status === 200) {
-        // The response now returns an object with "user" and "reviews"
         setUser(response.data.user);
         setReviews(response.data.reviews);
       }
@@ -200,7 +199,7 @@ function Profile() {
                       </h3>
                       <div className="flex items-center mb-2">
                         {[...Array(review.rating)].map((_, i) => (
-                          <Star key={i} className="text-yellow-500 w-5 h-5" />
+                          <Star key={i} className="text-primary fill-current w-5 h-5" />
                         ))}
                       </div>
                       <p className="text-gray-700">{review.comment}</p>
@@ -213,7 +212,6 @@ function Profile() {
             </div>
           )}
 
-          {/* Favorites Section (if implemented) */}
           {/* Favorites Section */}
           {activeTab === "favorites" && (
             <div className="space-y-6">
@@ -225,12 +223,16 @@ function Profile() {
                   {curUser.favorites && curUser.favorites.length > 0 ? (
                     curUser.favorites.map((favorite) => (
                       <a
-                        href={`${window.location.origin}/truck/${
-                          favorite.id || favorite._id
-                        }`}
-                        key={favorite.id || favorite._id}
+                        href={`/truck/${favorite._id}`}
+                        target="_blank"
+                        key={favorite._id}
                         className="bg-gray-50 rounded-lg shadow-sm overflow-hidden"
                       >
+                        <img
+                          src={favorite.image}
+                          alt={favorite.name}
+                          className="w-full h-40 object-cover"
+                        />
                         <div className="p-4">
                           <h3 className="font-semibold text-gray-900">
                             {favorite.name}

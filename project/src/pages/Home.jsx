@@ -13,7 +13,7 @@ function Home() {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCuisine, setSelectedCuisine] = useState("All");
   const [selectedDistance, setSelectedDistance] = useState("5");
-  const [selectedRating, setSelectedRating] = useState("3.0");
+  const [selectedRating, setSelectedRating] = useState("0"); // Fix: Allow all ratings by default
   const [selectedPrice, setSelectedPrice] = useState("$$$$");
   const [isMobileFiltersOpen, setIsMobileFiltersOpen] = useState(false);
 
@@ -25,7 +25,7 @@ function Home() {
     try {
       const response = await axiosInstance.get("/trucks/");
       if (response.status === 200) {
-        console.log(response.data.data);
+        console.log("Fetched Trucks Data:", response.data.data); // Debugging
         setAllTrucks(response.data.data);
       }
     } catch (error) {
@@ -35,6 +35,12 @@ function Home() {
 
   const filteredTrucks = useMemo(() => {
     return AllTrucks.filter((truck) => {
+      if (!truck || !truck.name) return false; // Ensure valid data
+
+      // Debugging output
+      console.log(`Checking truck: ${truck.name}`, truck);
+
+      // Search Query Filter
       if (
         searchQuery &&
         !(
@@ -47,18 +53,29 @@ function Home() {
       ) {
         return false;
       }
+
+      // Cuisine Type Filter
       if (
         selectedCuisine !== "All" &&
-        !truck.cuisineType.includes(selectedCuisine)
+        (!truck.cuisineType || !truck.cuisineType.includes(selectedCuisine))
       ) {
         return false;
       }
-      if (truck.rating && truck.rating.average < parseFloat(selectedRating)) {
+
+      // Rating Filter (Ensure it allows all ratings by default)
+      if (
+        truck.rating &&
+        truck.rating.average !== undefined &&
+        truck.rating.average < parseFloat(selectedRating)
+      ) {
         return false;
       }
+
       return true;
     });
   }, [AllTrucks, searchQuery, selectedCuisine, selectedRating]);
+
+  console.log("Filtered Trucks:", filteredTrucks); // Debugging
 
   // **Set a default map center if there are no trucks**
   const mapCenter =
@@ -123,21 +140,28 @@ function Home() {
                   <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
 
                   {AllTrucks.map((truck) => (
-                    <Marker
-                      key={truck._id}
-                      position={[
-                        truck.location.coordinates[1],
-                        truck.location.coordinates[0],
-                      ]}
-                    >
-                      <Popup>
-                        <div>
-                          <h3 className="font-semibold">{truck.name}</h3>
-                          <p>{truck.cuisineType.join(", ")}</p>
-                          <p>⭐ {truck.rating.average.toFixed(1)}</p>
-                        </div>
-                      </Popup>
-                    </Marker>
+                    truck.location?.coordinates?.length === 2 && (
+                      <Marker
+                        key={truck._id}
+                        position={[
+                          truck.location.coordinates[1],
+                          truck.location.coordinates[0],
+                        ]}
+                      >
+                        <Popup>
+                          <div>
+                            <h3 className="font-semibold">{truck.name}</h3>
+                            <p>{truck.cuisineType.join(", ")}</p>
+                            <p>⭐ {truck.rating.average.toFixed(1)}</p>
+                            <img
+                              src={truck.image}
+                              alt={truck.name}
+                              className="w-full h-24 object-cover mt-2 rounded-md"
+                            />
+                          </div>
+                        </Popup>
+                      </Marker>
+                    )
                   ))}
                 </MapContainer>
               </div>

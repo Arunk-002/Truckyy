@@ -3,7 +3,7 @@ import { Star, Send } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 import axiosInstance from "../axios/axios";
 
-function ReviewsTab({ truckId }) {
+function ReviewsTab({ truckId ,setavgReview}) {
   const { user } = useAuth();
   const [reviews, setReviews] = useState([]);
   const [reviewForm, setReviewForm] = useState({
@@ -18,13 +18,20 @@ function ReviewsTab({ truckId }) {
       const response = await axiosInstance.get(`/users/get-reviews/${truckId}`);
       if (response.status === 200) {
         setReviews(response.data || []);
-        console.log(response.data);
+        getAverageReview(response.data)
       }
     } catch (error) {
       console.log("Error fetching reviews:", error.message);
     }
   };
-
+  const getAverageReview = async (arr) => {
+    let sum  = 0
+    arr.map((elem)=>{
+         sum += elem.rating
+    })
+    const avg = Math.floor(sum/arr.length)
+    setavgReview(avg)
+}
   useEffect(() => {
     getReviews();
   }, [user]);
