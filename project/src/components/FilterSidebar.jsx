@@ -1,10 +1,5 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Star } from 'lucide-react';
-
-const CUISINES = ["All", "Mexican", "American", "Italian", "Asian", "Indian"];
-const DISTANCES = ["0.5", "1", "2", "5"];
-const RATINGS = ["4.5", "4.0", "3.5", "3.0"];
-const PRICES = ["$", "$$", "$$$", "$$$$"];
 
 function FilterSidebar({ 
   isMobileFiltersOpen, 
@@ -15,9 +10,12 @@ function FilterSidebar({
   setSelectedDistance,
   selectedRating,
   setSelectedRating,
-  selectedPrice,
-  setSelectedPrice
+  allCuisines = []
 }) {
+  const CUISINES = ["All", "None", ...allCuisines];
+  const DISTANCES = ["None", "0.5", "1", "2", "5"];
+  const RATINGS = ["None", "4.5", "4.0", "3.5", "3.0"];
+
   return (
     <div className={`
       lg:w-72 flex-shrink-0 
@@ -66,7 +64,7 @@ function FilterSidebar({
             className="w-full p-2 border border-gray-200 rounded-md focus:ring-2 focus:ring-secondary focus:border-secondary"
           >
             {DISTANCES.map(distance => (
-              <option key={distance} value={distance}>Within {distance} miles</option>
+              <option key={distance} value={distance}>{distance === "None" ? "None" : `Within ${distance} miles`}</option>
             ))}
           </select>
         </div>
@@ -85,25 +83,12 @@ function FilterSidebar({
                   className="h-4 w-4 text-secondary focus:ring-secondary"
                 />
                 <span className="ml-2 text-sm text-gray-600 flex items-center">
-                  {rating}+ <Star className="w-4 h-4 ml-1 text-accent fill-current" />
+                  {rating === "None" ? "None" : `${rating}+ `} 
+                  {rating !== "None" && <Star className="w-4 h-4 ml-1 text-accent fill-current" />}
                 </span>
               </label>
             ))}
           </div>
-        </div>
-
-        {/* Price Filter */}
-        <div className="mb-6">
-          <h3 className="text-sm font-medium text-gray-700 mb-2">Price Range</h3>
-          <select
-            value={selectedPrice}
-            onChange={(e) => setSelectedPrice(e.target.value)}
-            className="w-full p-2 border border-gray-200 rounded-md focus:ring-2 focus:ring-secondary focus:border-secondary"
-          >
-            {PRICES.map(price => (
-              <option key={price} value={price}>{price}</option>
-            ))}
-          </select>
         </div>
       </div>
     </div>

@@ -13,8 +13,7 @@ function Home() {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCuisine, setSelectedCuisine] = useState("All");
   const [selectedDistance, setSelectedDistance] = useState("5");
-  const [selectedRating, setSelectedRating] = useState("0"); // Fix: Allow all ratings by default
-  const [selectedPrice, setSelectedPrice] = useState("$$$$");
+  const [selectedRating, setSelectedRating] = useState("0");
   const [isMobileFiltersOpen, setIsMobileFiltersOpen] = useState(false);
 
   useEffect(() => {
@@ -25,7 +24,6 @@ function Home() {
     try {
       const response = await axiosInstance.get("/trucks/");
       if (response.status === 200) {
-        console.log("Fetched Trucks Data:", response.data.data); // Debugging
         setAllTrucks(response.data.data);
       }
     } catch (error) {
@@ -33,28 +31,28 @@ function Home() {
     }
   };
 
+  const allCuisines = useMemo(() => {
+    const cuisines = new Set();
+    AllTrucks.forEach(truck => {
+      if (truck.cuisineType) {
+        truck.cuisineType.forEach(type => cuisines.add(type));
+      }
+    });
+    return Array.from(cuisines);
+  }, [AllTrucks]);
+
   const filteredTrucks = useMemo(() => {
     return AllTrucks.filter((truck) => {
-      if (!truck || !truck.name) return false; // Ensure valid data
-
-      // Debugging output
-      console.log(`Checking truck: ${truck.name}`, truck);
-
-      // Search Query Filter
+      if (!truck || !truck.name) return false;
+      
       if (
         searchQuery &&
-        !(
-          truck.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          truck.cuisineType
-            .join(" ")
-            .toLowerCase()
-            .includes(searchQuery.toLowerCase())
-        )
+        !(truck.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          truck.cuisineType.join(" ").toLowerCase().includes(searchQuery.toLowerCase()))
       ) {
         return false;
       }
 
-      // Cuisine Type Filter
       if (
         selectedCuisine !== "All" &&
         (!truck.cuisineType || !truck.cuisineType.includes(selectedCuisine))
@@ -62,7 +60,6 @@ function Home() {
         return false;
       }
 
-      // Rating Filter (Ensure it allows all ratings by default)
       if (
         truck.rating &&
         truck.rating.average !== undefined &&
@@ -70,23 +67,18 @@ function Home() {
       ) {
         return false;
       }
-
       return true;
     });
   }, [AllTrucks, searchQuery, selectedCuisine, selectedRating]);
 
-  console.log("Filtered Trucks:", filteredTrucks); // Debugging
-
-  // **Set a default map center if there are no trucks**
   const mapCenter =
     AllTrucks.length > 0
       ? [AllTrucks[0].location.coordinates[1], AllTrucks[0].location.coordinates[0]]
-      : [20.5937, 78.9629]; // Default center (India)
+      : [20.5937, 78.9629];
 
   return (
     <div className="min-h-screen bg-gray-50">
       <Navbar setIsMobileFiltersOpen={setIsMobileFiltersOpen} />
-
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="flex flex-col lg:flex-row gap-8">
           <FilterSidebar
@@ -98,30 +90,20 @@ function Home() {
             setSelectedDistance={setSelectedDistance}
             selectedRating={selectedRating}
             setSelectedRating={setSelectedRating}
-            selectedPrice={selectedPrice}
-            setSelectedPrice={setSelectedPrice}
+            allCuisines={allCuisines}
           />
 
           <div className="flex-1">
-            {/* View Toggle */}
             <div className="bg-white rounded-lg shadow-sm p-2 mb-6 inline-flex">
               <button
-                className={`px-4 py-2 rounded-md transition-colors ${
-                  viewMode === "list"
-                    ? "bg-secondary text-white"
-                    : "text-gray-600 hover:bg-gray-50"
-                }`}
+                className={`px-4 py-2 rounded-md transition-colors ${viewMode === "list" ? "bg-secondary text-white" : "text-gray-600 hover:bg-gray-50"}`}
                 onClick={() => setViewMode("list")}
               >
                 <List className="w-5 h-5 inline-block mr-2" />
                 List View
               </button>
               <button
-                className={`px-4 py-2 rounded-md transition-colors ${
-                  viewMode === "map"
-                    ? "bg-secondary text-white"
-                    : "text-gray-600 hover:bg-gray-50"
-                }`}
+                className={`px-4 py-2 rounded-md transition-colors ${viewMode === "map" ? "bg-secondary text-white" : "text-gray-600 hover:bg-gray-50"}`}
                 onClick={() => setViewMode("map")}
               >
                 <Map className="w-5 h-5 inline-block mr-2" />
@@ -131,33 +113,17 @@ function Home() {
 
             {viewMode === "map" ? (
               <div className="bg-gray-100 rounded-lg h-[600px] flex items-center justify-center text-gray-500">
-                <MapContainer
-                  center={mapCenter}
-                  zoom={14}
-                  style={{ height: "600px", width: "100%" }}
-                  scrollWheelZoom={true}
-                >
+                <MapContainer center={mapCenter} zoom={14} style={{ height: "600px", width: "100%" }} scrollWheelZoom={true}>
                   <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
-
                   {AllTrucks.map((truck) => (
                     truck.location?.coordinates?.length === 2 && (
-                      <Marker
-                        key={truck._id}
-                        position={[
-                          truck.location.coordinates[1],
-                          truck.location.coordinates[0],
-                        ]}
-                      >
+                      <Marker key={truck._id} position={[truck.location.coordinates[1], truck.location.coordinates[0]]}>
                         <Popup>
                           <div>
                             <h3 className="font-semibold">{truck.name}</h3>
                             <p>{truck.cuisineType.join(", ")}</p>
                             <p>⭐ {truck.rating.average.toFixed(1)}</p>
-                            <img
-                              src={truck.image}
-                              alt={truck.name}
-                              className="w-full h-24 object-cover mt-2 rounded-md"
-                            />
+                            <img src={truck.image} alt={truck.name} className="w-full h-24 object-cover mt-2 rounded-md" />
                           </div>
                         </Popup>
                       </Marker>
@@ -169,17 +135,11 @@ function Home() {
               <div className="space-y-6">
                 {filteredTrucks.length === 0 ? (
                   <div className="text-center py-12">
-                    <p className="text-gray-500 text-lg">
-                      No food trucks match your filters.
-                    </p>
-                    <p className="text-gray-400">
-                      Try adjusting your search criteria.
-                    </p>
+                    <p className="text-gray-500 text-lg">No food trucks match your filters.</p>
+                    <p className="text-gray-400">Try adjusting your search criteria.</p>
                   </div>
                 ) : (
-                  filteredTrucks.map((truck) => (
-                    <TruckCard key={truck._id} truck={truck} />
-                  ))
+                  filteredTrucks.map((truck) => <TruckCard key={truck._id} truck={truck} />)
                 )}
               </div>
             )}
