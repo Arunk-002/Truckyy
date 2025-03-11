@@ -121,4 +121,21 @@ const getTrucks  =  async () => {
     throw new Error('Error getting the trucks ' + error.message )
   }
 }
-  module.exports = { updateFoodTruck,createTruck ,findtruck,updateOperatingHours,updateLocation,updateSubscription,getTrucks,findtruckById};
+const updateFoodTruckRating = async (truckId, newRating) => {
+  const foodTruck = await FoodTruck.findById(truckId);
+  if (!foodTruck) throw new Error("Food Truck not found");
+
+  const totalReviews = foodTruck.rating.count + 1;
+  const totalRating = foodTruck.rating.average * foodTruck.rating.count + newRating;
+  const newAverage = totalRating / totalReviews;
+
+  return await FoodTruck.findByIdAndUpdate(
+    truckId,
+    {
+      $set: { "rating.average": newAverage },
+      $inc: { "rating.count": 1 },
+    },
+    { new: true }
+  );
+};
+  module.exports = { updateFoodTruck,createTruck ,findtruck,updateOperatingHours,updateLocation,updateSubscription,getTrucks,findtruckById,updateFoodTruckRating};

@@ -1,12 +1,9 @@
 const Reviews = require("../models/Review")
 
-const addReview = async (data) => {
-    try {
-      return await Reviews.create(data);
-    } catch (error) {
-      throw new Error(error.message);
-    }
-  };
+const addReview = async (userId, truckId, rating, comment) => {
+  const review = new Reviews({ userId, truckId, rating, comment });
+  return await review.save();
+};
   const getReviewsByTruck = async (truckId) => {
     try {
       return await Reviews.find({ truckId }).populate("userId", "name"); 

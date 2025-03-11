@@ -1,5 +1,6 @@
 const userService = require("../services/userService");
 const reviewService = require("../services/reviewService")
+const truckService = require("../services/truckService")
 
 const getUserProfile = async (req, res) => {
   try {
@@ -17,20 +18,13 @@ const getUserProfile = async (req, res) => {
 
 const updateUserProfile = async (req, res) => {
   try {
-    const userId = req.params.id
-    console.log("------------",userId);
-    
+    const userId = req.params.id    
     const curUser = await userService.findUserById(userId);
-    console.log(curUser);
-    
     const updateData = req.body;
     curUser.name=updateData.name
-    console.log(updateData);
-    
     if (!(updateData.password==='false'||updateData.password==='')) {
       curUser.password=updateData.password
     }
-    
     const updatedUser = await userService.updateUser(userId, curUser);
     res.status(202).json(updatedUser);
   } catch (error) {
@@ -57,13 +51,15 @@ const handleFavoriteToggle = async (req, res) => {
 const createReview = async (req, res) => {
   try {
     const { truckId, rating, comment } = req.body;
-    const userId = req.params.id; 
+    const userId = req.params.id;
+
     if (!truckId || !rating) {
       return res.status(400).json({ message: "Truck ID and rating are required" });
     }
-    const reviewData = { userId, truckId, rating, comment };
-    const review = await reviewService.addReview(reviewData);
-    return res.status(201).json({ message: "Review added successfully", review });
+    const review = await reviewService.addReview(userId, truckId, rating, comment);
+    const updatedTruck = await truckService.updateFoodTruckRating(truckId, rating);
+
+    return res.status(201).json({ message: "Review added successfully", review, updatedTruck });
   } catch (error) {
     return res.status(500).json({ message: error.message });
   }
