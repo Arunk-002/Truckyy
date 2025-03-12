@@ -7,6 +7,7 @@ import axiosInstance from "../axios/axios";
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import { Icon } from "leaflet";
+import calculateDistance from "../utils/calculateDistance";
 
 function Home() {
   const [AllTrucks, setAllTrucks] = useState([]);
@@ -16,17 +17,38 @@ function Home() {
   const [selectedDistance, setSelectedDistance] = useState("5");
   const [selectedRating, setSelectedRating] = useState("0");
   const [isMobileFiltersOpen, setIsMobileFiltersOpen] = useState(false);
+  const [userLocation, setUserLocation] = useState(null);
 
   const truckIcon = new Icon({
-    iconUrl: "/food-truck.png", // Truck image URL
-    iconSize: [32, 32], // Size of the icon
-    iconAnchor: [16, 32], // Point of the icon which will correspond to marker's location
-    popupAnchor: [0, -32], // Point from which the popup should open
+    iconUrl: "/food-truck.png",
+    iconSize: [32, 32],
+    iconAnchor: [16, 32],
+    popupAnchor: [0, -32],
   });
 
   useEffect(() => {
     getAllTrucks();
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          setUserLocation({
+            lat: position.coords.latitude,
+            lon: position.coords.longitude,
+          });
+        },
+        (error) => {
+          console.error("Error getting location:", error);
+          setSelectedDistance("None");
+        }
+      );
+    }
   }, []);
+
+  useEffect(() => {
+    if (!userLocation && selectedDistance !== "None") {
+      setSelectedDistance("None");
+    }
+  }, [userLocation, selectedDistance]);
 
   const getAllTrucks = async () => {
     try {
@@ -39,26 +61,35 @@ function Home() {
     }
   };
 
-  const allCuisines = useMemo(() => {
-    const cuisines = new Set();
-    AllTrucks.forEach((truck) => {
-      if (truck.cuisineType) {
-        truck.cuisineType.forEach((type) => cuisines.add(type));
+  const trucksWithDistance = useMemo(() => {
+    return AllTrucks.map((truck) => {
+      let distance = null;
+      if (userLocation && truck.location?.coordinates?.length === 2) {
+        const truckLon = truck.location.coordinates[0];
+        const truckLat = truck.location.coordinates[1];
+        const distanceKm = calculateDistance(
+          userLocation.lat,
+          userLocation.lon,
+          truckLat,
+          truckLon
+        );
+        distance = distanceKm * 0.621371;
       }
+      return { ...truck, distance };
     });
-    return Array.from(cuisines);
-  }, [AllTrucks]);
+  }, [AllTrucks, userLocation]);
 
   const filteredTrucks = useMemo(() => {
-    return AllTrucks.filter((truck) => {
+    return trucksWithDistance.filter((truck) => {
       if (!truck || !truck.name) return false;
 
+      // Search filter
       if (
         searchQuery &&
         !(
           truck.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
           truck.cuisineType
-            .join(" ")
+            ?.join(" ")
             .toLowerCase()
             .includes(searchQuery.toLowerCase())
         )
@@ -66,31 +97,38 @@ function Home() {
         return false;
       }
 
+      // Cuisine filter
       if (
         selectedCuisine !== "All" &&
-        (!truck.cuisineType || !truck.cuisineType.includes(selectedCuisine))
+        !truck.cuisineType?.includes(selectedCuisine)
       ) {
         return false;
       }
 
+      // Rating filter
       if (
-        truck.rating &&
-        truck.rating.average !== undefined &&
-        truck.rating.average < parseFloat(selectedRating)
+        truck.rating?.average < parseFloat(selectedRating)
       ) {
         return false;
       }
+
+      // Distance filter
+      if (
+        selectedDistance !== "None" &&
+        (truck.distance === null || truck.distance > parseFloat(selectedDistance))
+      ) {
+        return false;
+      }
+
       return true;
     });
-  }, [AllTrucks, searchQuery, selectedCuisine, selectedRating]);
+  }, [trucksWithDistance, searchQuery, selectedCuisine, selectedRating, selectedDistance]);
 
-  const mapCenter =
-    AllTrucks.length > 0
-      ? [
-          AllTrucks[0].location.coordinates[1],
-          AllTrucks[0].location.coordinates[0],
-        ]
-      : [20.5937, 78.9629];
+  const mapCenter = userLocation 
+    ? [userLocation.lat, userLocation.lon]
+    : AllTrucks[0]?.location?.coordinates
+    ? [AllTrucks[0].location.coordinates[1], AllTrucks[0].location.coordinates[0]]
+    : [20.5937, 78.9629]; 
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -106,7 +144,8 @@ function Home() {
             setSelectedDistance={setSelectedDistance}
             selectedRating={selectedRating}
             setSelectedRating={setSelectedRating}
-            allCuisines={allCuisines}
+            allCuisines={Array.from(new Set(AllTrucks.flatMap(t => t.cuisineType)))}
+            userLocation={userLocation}
           />
 
           <div className="flex-1">
@@ -144,7 +183,19 @@ function Home() {
                   scrollWheelZoom={false}
                 >
                   <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
-                  {AllTrucks.map(
+                  {userLocation && (
+                    <Marker
+                      position={[userLocation.lat, userLocation.lon]}
+                      icon={new Icon({
+                        iconUrl: "/user-marker.png",
+                        iconSize: [24, 24],
+                        iconAnchor: [12, 24]
+                      })}
+                    >
+                      <Popup>Your Location</Popup>
+                    </Marker>
+                  )}
+                  {trucksWithDistance.map(
                     (truck) =>
                       truck.location?.coordinates?.length === 2 && (
                         <Marker
@@ -153,18 +204,25 @@ function Home() {
                             truck.location.coordinates[1],
                             truck.location.coordinates[0],
                           ]}
-                          icon={truckIcon} // 👈 Add custom icon here
+                          icon={truckIcon}
                         >
                           <Popup>
                             <a href={`${window.location.origin}/truck/${truck._id}`}>
-                              <h3>{truck?.name || "No Name"}</h3>
-                              <p>
-                                {truck?.cuisineType?.join(", ") ||
-                                  "Cuisine not specified"}
+                              <h3 className="font-semibold">{truck?.name}</h3>
+                              <p className="text-sm">
+                                {truck?.cuisineType?.join(", ") || "No cuisine specified"}
                               </p>
-                              {/* Add fallbacks for all data fields */}
+                              {truck.distance !== null && (
+                                <p className="text-sm mt-1">
+                                  {truck.distance.toFixed(1)} miles away
+                                </p>
+                              )}
                               {truck?.image && (
-                                <img src={truck.image} alt={truck.name} />
+                                <img 
+                                  src={truck.image} 
+                                  alt={truck.name}
+                                  className="mt-2 w-32 h-32 object-cover"
+                                />
                               )}
                             </a>
                           </Popup>
@@ -186,7 +244,11 @@ function Home() {
                   </div>
                 ) : (
                   filteredTrucks.map((truck) => (
-                    <TruckCard key={truck._id} truck={truck} />
+                    <TruckCard 
+                      key={truck._id} 
+                      truck={truck} 
+                      distance={truck?.distance} 
+                    />
                   ))
                 )}
               </div>

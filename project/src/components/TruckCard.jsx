@@ -2,7 +2,7 @@ import React from 'react';
 import { MapPin, Star, Clock, DollarSign } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
-function TruckCard({ truck }) {
+function TruckCard({ truck,distance }) {
   return (
     <Link to={`/truck/${truck._id}`} className="block"> {/* Use _id instead of id */}
       <div className="bg-white rounded-lg shadow-sm overflow-hidden hover:shadow-md transition-shadow">
@@ -31,7 +31,7 @@ function TruckCard({ truck }) {
               <div className="flex items-center">
                 <MapPin className="w-5 h-5 mr-2 text-secondary" />
                 {/* Distance is not in backend data - Remove or calculate it */}
-                <span>Distance not available</span>
+                <span>{Number(distance.toFixed(2))} miles away</span>
               </div>
               <div className="flex items-center">
                 <Clock className="w-5 h-5 mr-2 text-secondary" />

@@ -12,7 +12,7 @@ function FilterSidebar({
   setSelectedRating,
   allCuisines = []
 }) {
-  const CUISINES = ["All", "None", ...allCuisines];
+  const CUISINES = ["All", ...allCuisines];
   const DISTANCES = ["None", "0.5", "1", "2", "5"];
   const RATINGS = ["None", "4.5", "4.0", "3.5", "3.0"];
 
