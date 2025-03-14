@@ -19,7 +19,6 @@ export const AuthProvider = ({ children }) => {
     const fetchUser = async () => {
       try {
         const token = localStorage.getItem("token");
-    
         const res = await axiosInstance.get("/users/profile", {
           headers: { Authorization: `Bearer ${token}` },
           withCredentials: true,
@@ -33,13 +32,9 @@ export const AuthProvider = ({ children }) => {
       }
     };
     
-  
     fetchUser();
   }, []);
   
-  
-
-
   const login = async (email, password) => {
     try {
       const res = await axiosInstance.post("/users/login", { email, password });
@@ -53,10 +48,9 @@ export const AuthProvider = ({ children }) => {
     }
   };
   
-
   const logout = async () => {
     await axiosInstance.get("/users/logout");
-    localStorage.clear("token");
+    localStorage.removeItem("token");
     setUser(null);
     navigate("/signin");
   };

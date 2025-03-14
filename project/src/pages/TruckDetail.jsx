@@ -15,9 +15,10 @@ import "leaflet/dist/leaflet.css";
 import { useAuth } from "../context/AuthContext";
 import { notifyMessage } from "../toasts/toast";
 import ReviewsTab from "../components/ReviewsTab"; // Import the ReviewsTab component
-
+import { Icon } from "leaflet";
 // Create a context provider to pass truck data to the ReviewsTab
 import { createContext } from "react";
+import calculateDistance from "../utils/calculateDistance";
 export const TruckContext = createContext();
 
 export const TruckProvider = ({ children, value }) => {
@@ -37,7 +38,23 @@ function TruckDetail() {
   useEffect(() => {
     getTruck();
   }, [id, user]);
+  useEffect(() => {
+    if (truck && navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const userLat = position.coords.latitude;
+          const userLon = position.coords.longitude;
+          const truckLat = truck.location.coordinates[1];
+          const truckLon = truck.location.coordinates[0];
 
+          const distance = calculateDistance(userLat, userLon, truckLat, truckLon);
+          setTruck((prevTruck) => ({ ...prevTruck, distance }));
+        },
+        (error) => console.error("Error fetching location", error),
+        { enableHighAccuracy: true }
+      );
+    }
+  }, [truck]);
   const shareTruck = () => {
     const truckURL = `${window.location.origin}/truck/${truck._id}`;
     navigator.clipboard.writeText(truckURL);
@@ -131,8 +148,8 @@ function TruckDetail() {
           {/* Quick Actions */}
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mt-6">
             <button className="flex items-center justify-center space-x-2 bg-primary text-white py-3 rounded-lg hover:bg-primary/90 transition-colors">
-              <Navigation className="w-5 h-5" />
-              <span>Directions</span>
+              <MapPin className="w-5 h-5" />
+              <span>Location</span>
             </button>
             {user ? (
               <>
@@ -184,18 +201,20 @@ function TruckDetail() {
                 >
                   <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
                   <Marker
-                    position={[
-                      truck.location.coordinates[1],
-                      truck.location.coordinates[0],
-                    ]}
-                  />
+                      position={[truck.location.coordinates[1],truck.location.coordinates[0]]}
+                      icon={new Icon({
+                        iconUrl: "/food-truck.png",
+                        iconSize: [24, 24],
+                        iconAnchor: [12, 24]
+                      })}
+                    />
                 </MapContainer>
               </div>
               <div className="flex items-start space-x-2">
                 <MapPin className="w-5 h-5 text-primary mt-1" />
                 <div>
                   <p className="text-gray-800">
-                    {`Latitude: ${truck.location.coordinates[1]}, Longitude: ${truck.location.coordinates[0]}`}
+                  {truck.distance?.toFixed(1)} miles away
                   </p>
                   <p className="text-gray-500 text-sm">
                     Updated{" "}

@@ -187,7 +187,7 @@ function Home() {
                     <Marker
                       position={[userLocation.lat, userLocation.lon]}
                       icon={new Icon({
-                        iconUrl: "/user-marker.png",
+                        iconUrl: "https://img.icons8.com/ios/50/standing-man.png",
                         iconSize: [24, 24],
                         iconAnchor: [12, 24]
                       })}

@@ -103,7 +103,7 @@ function Profile() {
                 {curUser?.name ? curUser.name[0] : "?"}
               </div>
               <div className="ml-6">
-                <h1 className="text-2xl font-bold text-gray-900">
+                <h1 className="text-2xl font-bold text-gray-900 capitalize">
                   {curUser?.name || "Guest"}
                 </h1>
                 <div className="flex flex-col sm:flex-row sm:items-center text-gray-600 mt-1 space-y-1 sm:space-y-0 sm:space-x-4">

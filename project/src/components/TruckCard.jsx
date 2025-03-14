@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 
 function TruckCard({ truck,distance }) {
   return (
-    <Link to={`/truck/${truck._id}`} className="block"> {/* Use _id instead of id */}
+    <Link to={`/truck/${truck._id}`} className="block"> 
       <div className="bg-white rounded-lg shadow-sm overflow-hidden hover:shadow-md transition-shadow">
         <div className="flex flex-col sm:flex-row">
           <div className="w-full sm:w-72 h-48">
@@ -22,16 +22,15 @@ function TruckCard({ truck,distance }) {
               </div>
               <div className="flex items-center space-x-1 mt-2 sm:mt-0">
                 <Star className="w-5 h-5 text-accent fill-current" />
-                <span className="text-gray-700">{truck.rating.average.toFixed(1)}</span> {/* Fix rating display */}
+                <span className="text-gray-700">{truck.rating.average?.toFixed(1)}</span> {/* Fix rating display */}
                 <span className="text-gray-500">({truck.rating.count})</span>
               </div>
             </div>
-            
             <div className="mt-4 space-y-2 text-gray-600">
               <div className="flex items-center">
                 <MapPin className="w-5 h-5 mr-2 text-secondary" />
                 {/* Distance is not in backend data - Remove or calculate it */}
-                <span>{Number(distance.toFixed(2))} miles away</span>
+                <span>{Number(distance?.toFixed(2))} miles away</span>
               </div>
               <div className="flex items-center">
                 <Clock className="w-5 h-5 mr-2 text-secondary" />
