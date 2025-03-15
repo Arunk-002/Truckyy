@@ -47,7 +47,12 @@ function TruckDetail() {
           const truckLat = truck.location.coordinates[1];
           const truckLon = truck.location.coordinates[0];
 
-          const distance = calculateDistance(userLat, userLon, truckLat, truckLon);
+          const distance = calculateDistance(
+            userLat,
+            userLon,
+            truckLat,
+            truckLon
+          );
           setTruck((prevTruck) => ({ ...prevTruck, distance }));
         },
         (error) => console.error("Error fetching location", error),
@@ -112,7 +117,7 @@ function TruckDetail() {
   return (
     <TruckProvider value={{ truck }}>
       <div className="min-h-screen bg-gray-50">
-        <Navbar setIsMobileFiltersOpen={() => {}} />
+        <Navbar setIsMobileFiltersOpen={() => {}} showSearch={false} />
 
         <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           {/* Hero Section */}
@@ -138,7 +143,7 @@ function TruckDetail() {
                 <div className="flex items-center space-x-2 bg-primary/10 px-4 py-2 rounded-full">
                   <Star className="w-6 h-6 text-primary fill-current" />
                   <span className="text-xl font-semibold">
-                    {avgReview ? avgReview:"3"}
+                    {avgReview ? avgReview : "3"}
                   </span>
                 </div>
               </div>
@@ -201,20 +206,25 @@ function TruckDetail() {
                 >
                   <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
                   <Marker
-                      position={[truck.location.coordinates[1],truck.location.coordinates[0]]}
-                      icon={new Icon({
+                    position={[
+                      truck.location.coordinates[1],
+                      truck.location.coordinates[0],
+                    ]}
+                    icon={
+                      new Icon({
                         iconUrl: "/food-truck.png",
                         iconSize: [24, 24],
-                        iconAnchor: [12, 24]
-                      })}
-                    />
+                        iconAnchor: [12, 24],
+                      })
+                    }
+                  />
                 </MapContainer>
               </div>
               <div className="flex items-start space-x-2">
                 <MapPin className="w-5 h-5 text-primary mt-1" />
                 <div>
                   <p className="text-gray-800">
-                  {truck.distance?.toFixed(1)} miles away
+                    {truck.distance?.toFixed(1)} miles away
                   </p>
                   <p className="text-gray-500 text-sm">
                     Updated{" "}
@@ -267,7 +277,9 @@ function TruckDetail() {
             </div>
 
             {/* Render the ReviewsTab component when showReviewsTab is true */}
-            {showReviewsTab && <ReviewsTab setavgReview={setavgReview} truckId={id} />}
+            {showReviewsTab && (
+              <ReviewsTab setavgReview={setavgReview} truckId={id} />
+            )}
           </div>
         </main>
       </div>

@@ -106,33 +106,46 @@ function Home() {
       }
 
       // Rating filter
-      if (
-        truck.rating?.average < parseFloat(selectedRating)
-      ) {
+      if (truck.rating?.average < parseFloat(selectedRating)) {
         return false;
       }
 
       // Distance filter
       if (
         selectedDistance !== "None" &&
-        (truck.distance === null || truck.distance > parseFloat(selectedDistance))
+        (truck.distance === null ||
+          truck.distance > parseFloat(selectedDistance))
       ) {
         return false;
       }
 
       return true;
     });
-  }, [trucksWithDistance, searchQuery, selectedCuisine, selectedRating, selectedDistance]);
+  }, [
+    trucksWithDistance,
+    searchQuery,
+    selectedCuisine,
+    selectedRating,
+    selectedDistance,
+  ]);
 
-  const mapCenter = userLocation 
+  const mapCenter = userLocation
     ? [userLocation.lat, userLocation.lon]
     : AllTrucks[0]?.location?.coordinates
-    ? [AllTrucks[0].location.coordinates[1], AllTrucks[0].location.coordinates[0]]
-    : [20.5937, 78.9629]; 
+    ? [
+        AllTrucks[0].location.coordinates[1],
+        AllTrucks[0].location.coordinates[0],
+      ]
+    : [20.5937, 78.9629];
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <Navbar setIsMobileFiltersOpen={setIsMobileFiltersOpen} />
+      <Navbar
+        setIsMobileFiltersOpen={setIsMobileFiltersOpen}
+        searchQuery={searchQuery}
+        setSearchQuery={setSearchQuery}
+        showSearch={true} // This is optional since true is the default
+      />
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="flex flex-col lg:flex-row gap-8">
           <FilterSidebar
@@ -144,7 +157,9 @@ function Home() {
             setSelectedDistance={setSelectedDistance}
             selectedRating={selectedRating}
             setSelectedRating={setSelectedRating}
-            allCuisines={Array.from(new Set(AllTrucks.flatMap(t => t.cuisineType)))}
+            allCuisines={Array.from(
+              new Set(AllTrucks.flatMap((t) => t.cuisineType))
+            )}
             userLocation={userLocation}
           />
 
@@ -186,11 +201,14 @@ function Home() {
                   {userLocation && (
                     <Marker
                       position={[userLocation.lat, userLocation.lon]}
-                      icon={new Icon({
-                        iconUrl: "https://img.icons8.com/ios/50/standing-man.png",
-                        iconSize: [24, 24],
-                        iconAnchor: [12, 24]
-                      })}
+                      icon={
+                        new Icon({
+                          iconUrl:
+                            "https://img.icons8.com/ios/50/standing-man.png",
+                          iconSize: [24, 24],
+                          iconAnchor: [12, 24],
+                        })
+                      }
                     >
                       <Popup>Your Location</Popup>
                     </Marker>
@@ -207,10 +225,13 @@ function Home() {
                           icon={truckIcon}
                         >
                           <Popup>
-                            <a href={`${window.location.origin}/truck/${truck._id}`}>
+                            <a
+                              href={`${window.location.origin}/truck/${truck._id}`}
+                            >
                               <h3 className="font-semibold">{truck?.name}</h3>
                               <p className="text-sm">
-                                {truck?.cuisineType?.join(", ") || "No cuisine specified"}
+                                {truck?.cuisineType?.join(", ") ||
+                                  "No cuisine specified"}
                               </p>
                               {truck.distance !== null && (
                                 <p className="text-sm mt-1">
@@ -218,8 +239,8 @@ function Home() {
                                 </p>
                               )}
                               {truck?.image && (
-                                <img 
-                                  src={truck.image} 
+                                <img
+                                  src={truck.image}
                                   alt={truck.name}
                                   className="mt-2 w-32 h-32 object-cover"
                                 />
@@ -244,10 +265,10 @@ function Home() {
                   </div>
                 ) : (
                   filteredTrucks.map((truck) => (
-                    <TruckCard 
-                      key={truck._id} 
-                      truck={truck} 
-                      distance={truck?.distance} 
+                    <TruckCard
+                      key={truck._id}
+                      truck={truck}
+                      distance={truck?.distance}
                     />
                   ))
                 )}
