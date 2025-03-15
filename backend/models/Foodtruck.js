@@ -76,12 +76,7 @@ const foodTruckSchema = new Schema(
         default: 0,
       },
     },
-    stats: {
-      favorites: {
-        type: Number,
-        default: 0,
-      },
-    },
+    favorites: [{ type: Schema.Types.ObjectId, ref: "User" }],
     isActive: {
       type: Boolean,
       default: true,

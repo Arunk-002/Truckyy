@@ -1,12 +1,14 @@
 import { createContext, useContext, useState, useEffect } from "react";
 import axiosInstance from "../axios/axios";
 import { useAuth } from "./AuthContext";
+import { useNavigate } from "react-router-dom";
 
 const TruckContext = createContext();
 
 export const TruckProvider = ({ children }) => {
   const [truck, setTruck] = useState(null);
-  const { user } = useAuth();
+  const { user, logout } = useAuth(); // include logout here
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (!user) return; // Exit if user is not available
@@ -23,10 +25,20 @@ export const TruckProvider = ({ children }) => {
     };
 
     getTruckDetails();
-  }, [user]); // Depend on `user` so it refetches when user changes
+  }, [user]);
+
+  const logoutTruck = async () => {
+    try {
+      setTruck(null);
+      logout();
+      navigate('/');
+    } catch (error) {
+      console.error("Error logging out truck:", error);
+    }
+  };
 
   return (
-    <TruckContext.Provider value={{ truck,setTruck }}>
+    <TruckContext.Provider value={{ truck, setTruck, logoutTruck }}>
       {children}
     </TruckContext.Provider>
   );

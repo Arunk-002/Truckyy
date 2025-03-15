@@ -64,26 +64,30 @@ const updateUserField = async (id, field, data) => {
 
 const toggleFavorite = async (userId, truckId) => {
   try {
-    
     const truck = await FoodTruck.findById(truckId);
     if (!truck) throw new Error("Food truck not found");
 
-    
     const user = await User.findById(userId);
     if (!user) throw new Error("User not found");
 
     const isFavorited = user.favorites.includes(truckId);
 
     if (isFavorited) {
-      
+      // Remove from user's favorites and decrement truck's favorite count
       await User.findByIdAndUpdate(userId, { $pull: { favorites: truckId } });
-      await FoodTruck.findByIdAndUpdate(truckId, { $inc: { "stats.favorites": -1 } });
+      await FoodTruck.findByIdAndUpdate(truckId, {
+        $inc: { "stats.favorites": -1 },
+        $pull: { favorites: userId }, // Remove user from the truck's favorites list
+      });
 
       return { success: true, message: "Truck removed from favorites", favorited: false };
     } else {
-      
+      // Add to user's favorites and increment truck's favorite count
       await User.findByIdAndUpdate(userId, { $addToSet: { favorites: truckId } });
-      await FoodTruck.findByIdAndUpdate(truckId, { $inc: { "stats.favorites": 1 } });
+      await FoodTruck.findByIdAndUpdate(truckId, {
+        $inc: { "stats.favorites": 1 },
+        $addToSet: { favorites: userId }, // Add user to the truck's favorites list
+      });
 
       return { success: true, message: "Truck added to favorites", favorited: true };
     }
@@ -91,4 +95,5 @@ const toggleFavorite = async (userId, truckId) => {
     throw new Error(error.message);
   }
 };
+
 module.exports = { createUser, findUser, findUserById,findOtp,deleteOtp,updateUser,updateUserField,toggleFavorite };

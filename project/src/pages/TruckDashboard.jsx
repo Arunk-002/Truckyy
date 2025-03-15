@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import { Power } from "lucide-react";
 import StatsCards from "../components/StatsCards";
 import AboutTab from "../components/AboutTab";
 import MenuTab from "../components/MenuTab";
@@ -11,11 +10,11 @@ import { useTruck } from "../context/TruckContext";
 
 function TruckDashboard() {
   const [truckId, setTruckId] = useState();
-  const [isOpen, setIsOpen] = useState(true);
   const [activeTab, setActiveTab] = useState("menu");
-  const { truck } = useTruck();
+  const { truck, logoutTruck } = useTruck();
   const { user } = useAuth();
   const [navlinks, setNavlinks] = useState([]);
+
   useEffect(() => {
     if (truck) {
       setTruckId(truck._id);
@@ -26,27 +25,21 @@ function TruckDashboard() {
       setNavlinks(["menu", "about", "hours", "location", "subscription"]);
     }
   }, [truck]);
+
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
       <header className="bg-white shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-          <div className="flex justify-between items-center">
-            <h1 className="text-2xl font-bold text-gray-900">
-              <span className=" capitalize">{user.name}'s</span> Dashboard
-            </h1>
-            {/* <div className="flex items-center space-x-4">
-              <button
-                onClick={() => setIsOpen(!isOpen)}
-                className={`px-4 py-2 rounded-full flex items-center ${
-                  isOpen ? "bg-green-500 text-white" : "bg-red-500 text-white"
-                }`}
-              >
-                <Power className="w-4 h-4 mr-2" />
-                {isOpen ? "Open" : "Closed"}
-              </button>
-            </div> */}
-          </div>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
+          <h1 className="text-2xl font-bold text-gray-900">
+            <span className="capitalize">{user.name}'s</span> Dashboard
+          </h1>
+          <button
+            onClick={logoutTruck}
+            className="px-4 py-2 bg-red-500 text-white rounded-md"
+          >
+            Logout
+          </button>
         </div>
       </header>
 
@@ -79,14 +72,12 @@ function TruckDashboard() {
 
           <div className="p-6">
             {activeTab === "about" && <AboutTab />}
-
             {activeTab === "menu" && <MenuTab />}
-
             {activeTab === "hours" && <HoursTab />}
-
             {activeTab === "location" && <LocationTab />}
-
-            {activeTab === "subscription" && <SubscriptionTab close={setActiveTab} />}
+            {activeTab === "subscription" && (
+              <SubscriptionTab close={setActiveTab} />
+            )}
           </div>
         </div>
       </main>

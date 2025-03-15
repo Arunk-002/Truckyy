@@ -1,6 +1,7 @@
 const truckService = require("../services/truckService");
 const userService = require("../services/userService");
 const menuService = require("../services/menuService");
+const reviewService = require("../services/reviewService")
 const registerTruck = async (req, res) => {
   try {
     const { userId, truckName, gstNumber } = req.body;
@@ -62,6 +63,8 @@ const getTruck = async (req, res) => {
       return res.status(400).json({ message: "no user id found" });
     }
     const result = await truckService.findtruck(userId);
+    const reviews = await reviewService.getReviewsByTruck(result._id)
+    result.reviews=reviews.length
     res.status(200).json({ message: "truck found", truck: result });
   } catch (error) {
     res.status(400).json({ message: error.message });
