@@ -3,7 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { MapPin, Mail, Lock, User } from "lucide-react";
 import axiosInstance from "../axios/axios";
 import { notifyError, notifySignup } from "../toasts/toast";
-import OTPModal from "../components/OtpModal";
+import OTPModal from "../components/OTPModal";
 import SendEmail from "../utils/SendEmail";
 import CustomLoader from "../components/CustomLoader";
 function SignUp() {
