@@ -2,8 +2,8 @@ import Axios from "axios";
 import { notifyError } from "../toasts/toast";
 
 const axiosInstance = Axios.create({
-  baseURL: "http://localhost:3000/", // Update to your backend port
-  withCredentials: true, // Send cookies for refresh token
+  baseURL: import.meta.env.VITE_BACKEND_URL, 
+  withCredentials: true, 
 });
 
 axiosInstance.interceptors.response.use(
@@ -21,7 +21,7 @@ axiosInstance.interceptors.response.use(
         axiosInstance.defaults.headers.common["Authorization"] = `Bearer ${res.data.accessToken}`;
         originalRequest.headers["Authorization"] = `Bearer ${res.data.accessToken}`;
 
-        return axiosInstance(originalRequest); // Retry request
+        return axiosInstance(originalRequest);
       } catch (err) {
         console.error("Session expired. Please log in again.");
         localStorage.removeItem("token");
