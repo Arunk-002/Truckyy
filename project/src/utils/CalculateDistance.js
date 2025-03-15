@@ -1,4 +1,4 @@
-function calculateDistance(lat1, lon1, lat2, lon2) {
+function CalculateDistance(lat1, lon1, lat2, lon2) {
     const toRad = angle => (angle * Math.PI) / 180;
     const R = 6371; 
     
@@ -13,4 +13,4 @@ function calculateDistance(lat1, lon1, lat2, lon2) {
     return R * c;
 }
 
-export default calculateDistance;
+export default CalculateDistance;

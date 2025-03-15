@@ -7,7 +7,7 @@ import axiosInstance from "../axios/axios";
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import { Icon } from "leaflet";
-import calculateDistance from "../utils/calculateDistance";
+import CalculateDistance from "../utils/CalculateDistance";
 
 function Home() {
   const [AllTrucks, setAllTrucks] = useState([]);

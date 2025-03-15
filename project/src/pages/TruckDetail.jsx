@@ -18,7 +18,7 @@ import ReviewsTab from "../components/ReviewsTab"; // Import the ReviewsTab comp
 import { Icon } from "leaflet";
 // Create a context provider to pass truck data to the ReviewsTab
 import { createContext } from "react";
-import calculateDistance from "../utils/calculateDistance";
+import CalculateDistance from "../utils/CalculateDistance";
 export const TruckContext = createContext();
 
 export const TruckProvider = ({ children, value }) => {
