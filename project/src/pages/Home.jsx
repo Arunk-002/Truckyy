@@ -67,7 +67,7 @@ function Home() {
       if (userLocation && truck.location?.coordinates?.length === 2) {
         const truckLon = truck.location.coordinates[0];
         const truckLat = truck.location.coordinates[1];
-        const distanceKm = calculateDistance(
+        const distanceKm = CalculateDistance(
           userLocation.lat,
           userLocation.lon,
           truckLat,

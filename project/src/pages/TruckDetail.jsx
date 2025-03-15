@@ -47,7 +47,7 @@ function TruckDetail() {
           const truckLat = truck.location.coordinates[1];
           const truckLon = truck.location.coordinates[0];
 
-          const distance = calculateDistance(
+          const distance = CalculateDistance(
             userLat,
             userLon,
             truckLat,
