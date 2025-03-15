@@ -16,7 +16,6 @@ import { useAuth } from "../context/AuthContext";
 import { notifyMessage } from "../toasts/toast";
 import ReviewsTab from "../components/ReviewsTab"; // Import the ReviewsTab component
 import { Icon } from "leaflet";
-// Create a context provider to pass truck data to the ReviewsTab
 import { createContext } from "react";
 import CalculateDistance from "../utils/CalculateDistance";
 export const TruckContext = createContext();
