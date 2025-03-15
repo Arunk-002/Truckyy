@@ -11,6 +11,7 @@ import { AuthProvider } from "./context/AuthContext";
 import { TruckProvider } from "./context/TruckContext";
 import TruckDashboard from "./pages/TruckDashboard";
 import TruckSignUp from "./pages/TruckSignUp";
+import NotFound from "./pages/NotFound";
 
 function App() {
   return (
@@ -53,6 +54,9 @@ function App() {
                 }
               />
             </Route>
+            
+            {/* 404 Route - Must be last */}
+            <Route path="*" element={<NotFound />} />
           </Routes>
         </TruckProvider>
       </AuthProvider>
