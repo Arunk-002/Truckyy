@@ -55,12 +55,36 @@ function Navbar({ setIsMobileFiltersOpen, searchQuery, setSearchQuery, showSearc
           )}
         </div>
 
-        <button
-          className="sm:hidden p-2 hover:bg-primary-dark"
-          onClick={() => setIsMobileFiltersOpen && setIsMobileFiltersOpen(true)}
-        >
-          <List className="w-6 h-6" />
-        </button>
+        <div className="flex items-center">
+          {/* Mobile auth buttons */}
+          <div className="sm:hidden flex items-center mr-2">
+            {user ? (
+              <>
+                <Link to="/profile" className="p-2 hover:text-accent">
+                  <User className="w-5 h-5" />
+                </Link>
+                <button
+                  onClick={() => logout()}
+                  className="p-2 hover:text-accent"
+                  title="Sign Out"
+                >
+                  <LogOut className="w-5 h-5" />
+                </button>
+              </>
+            ) : (
+              <button className="p-2 hover:text-accent" onClick={() => navigate('/signin')}>
+                <LogIn className="w-5 h-5" />
+              </button>
+            )}
+          </div>
+          
+          <button
+            className="sm:hidden p-2 hover:bg-primary-dark"
+            onClick={() => setIsMobileFiltersOpen && setIsMobileFiltersOpen(true)}
+          >
+            <List className="w-6 h-6" />
+          </button>
+        </div>
       </div>
     </nav>
   );
