@@ -14,7 +14,7 @@ function Navbar({ setIsMobileFiltersOpen, searchQuery, setSearchQuery, showSearc
           <div className="flex items-center space-x-4">
             <MapPin className="w-8 h-8" />
             <span className="text-xl font-bold hidden sm:inline">
-              FoodTruck Finder
+              Truckky
             </span>
           </div>
         </Link>

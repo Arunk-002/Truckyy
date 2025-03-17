@@ -18,6 +18,8 @@ import ReviewsTab from "../components/ReviewsTab"; // Import the ReviewsTab comp
 import { Icon } from "leaflet";
 import { createContext } from "react";
 import CalculateDistance from "../utils/CalculateDistance";
+import CustomLoader from '../components/CustomLoader'
+
 export const TruckContext = createContext();
 
 export const TruckProvider = ({ children, value }) => {
@@ -106,11 +108,7 @@ function TruckDetail() {
   };
 
   if (!truck) {
-    return (
-      <div className="min-h-screen flex justify-center items-center">
-        <p className="text-gray-600 text-lg">Loading...</p>
-      </div>
-    );
+    return <CustomLoader/>
   }
 
   return (

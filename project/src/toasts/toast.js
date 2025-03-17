@@ -16,6 +16,7 @@ const notifySignup = (username) => {
     position: "top-center",
   });
 };
+
 const notifyMessage = (message) => {
   toast.success(`🍔 ${message}!`, {
     icon: "🎉",
@@ -51,10 +52,10 @@ const notifyError = (message) => {
   toast.error(`🚨 Oops! ${message}`, {
     icon: "⚠️",
     style: {
-      border: "2px solid #F38181", // Primary (red shade)
+      border: "2px solid #F38181", // Primary color
       padding: "14px",
       color: "#fff",
-      background: "#B00020", // Strong warning color
+      background: "#F38181", // Using primary color for error background
       fontWeight: "bold",
       borderRadius: "10px",
     },
@@ -62,9 +63,6 @@ const notifyError = (message) => {
     position: "top-center",
   });
 };
-
-
-
 
 // ----------------------------SweetAlert--------------------------------
 
@@ -74,8 +72,8 @@ const confirmModal = async () => {
     text: "You won't be able to undo this action!",
     icon: "warning",
     showCancelButton: true,
-    confirmButtonColor: "#3085d6",
-    cancelButtonColor: "#d33",
+    confirmButtonColor: "#95E1D3", // Dark theme color
+    cancelButtonColor: "#F38181", // Primary color
     confirmButtonText: "Yes, proceed!",
     cancelButtonText: "Cancel",
   });
@@ -86,5 +84,4 @@ const confirmModal = async () => {
   }
 };
 
-
-export { notifySignup, notifyLogin, notifyError, notifyMessage,confirmModal };
+export { notifySignup, notifyLogin, notifyError, notifyMessage, confirmModal };
